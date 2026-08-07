@@ -13,7 +13,6 @@ import {
   Sparkles,
   Upload,
 } from 'lucide-react';
-import JobDashboard from '../components/JobSuite/JobDashboard';
 import ThemeToggle from '../components/ThemeToggle';
 import { JobAnalysisProvider } from '../context/JobAnalysisContext';
 import {
@@ -24,6 +23,7 @@ import {
   getUserInitial,
   requireAuth,
 } from '../utils/auth';
+import { addCachedResume } from '../utils/resumeStore';
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -73,6 +73,14 @@ export default function UploadPage() {
       const { data } = await uploadResume(formData);
       toast.success(data.message);
       setParsedResume(data.data);
+
+      // Make the new resume immediately selectable on the dashboard, JD matcher,
+      // suggestions picker and career chat.
+      addCachedResume({
+        _id: data.data.resumeId,
+        originalFileName: file.name,
+        atsScore: null,
+      });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Upload failed');
     } finally {
@@ -99,9 +107,9 @@ export default function UploadPage() {
         <header className="sticky top-0 z-50 border-b border-dark-700/70 bg-dark-950/75 backdrop-blur-xl">
           <div className="page-wrap flex h-16 items-center justify-between">
             <button
-              onClick={() => navigate('/upload')}
+              onClick={() => navigate('/dashboard')}
               className="flex items-center gap-3"
-              aria-label="Go to upload page"
+              aria-label="Go to dashboard"
             >
               <div className="brand-mark h-9 w-9 rounded-xl">
                 <Sparkles className="h-4 w-4" />
@@ -242,21 +250,6 @@ export default function UploadPage() {
             </section>
           </div>
 
-          {/* Step 2: Job Matching (Intelligence Suite) */}
-          <section className="animate-slide-up">
-             <div className="flex items-center gap-3 mb-6">
-               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-300 text-dark-950 font-bold text-sm">2</span>
-               <h2 className="font-display text-3xl font-semibold text-dark-50">Match Role Intelligence</h2>
-             </div>
-             <p className="text-dark-400 max-w-3xl mb-8">
-               Paste the job description you're targeting. We'll run a deep ATS analysis, suggest specific wording improvements, 
-               and draft a tailored cover letter based on your matched skills.
-             </p>
-             
-             <div className="bg-dark-900/40 rounded-[2rem] border border-dark-700/50 p-1">
-                <JobDashboard resume={parsedResume} />
-             </div>
-          </section>
 
           <footer className="pt-12 pb-8 border-t border-dark-800 text-center text-dark-500 text-sm">
             <p>&copy; 2026 CareerPilot AI — Premium Intelligence Suite</p>

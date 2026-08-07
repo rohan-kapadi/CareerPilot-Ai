@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Shield, Download, Trash2, ShieldAlert } from 'lucide-react';
 import ConsentToggle from '../components/privacy/ConsentToggle';
 import RedactionPreview from '../components/privacy/RedactionPreview';
@@ -83,6 +84,12 @@ export default function PrivacyDashboardPage() {
     <div className="max-w-4xl mx-auto p-6 md:p-12 space-y-12">
       {/* Header */}
       <div>
+        <Link
+          to="/dashboard"
+          className="mb-6 flex w-fit items-center gap-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
+        >
+          ← Dashboard
+        </Link>
         <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
           <Shield className="w-6 h-6 text-blue-400" />
         </div>

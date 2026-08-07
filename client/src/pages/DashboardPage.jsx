@@ -9,6 +9,8 @@ import toast from 'react-hot-toast';
 import { listJDs } from '../api/jdApi';
 import { listMatches } from '../api/matchApi';
 import { listSuggestions } from '../api/suggestionApi';
+import { syncResumes } from '../utils/resumeStore';
+import { clearSession } from '../utils/auth';
 import MemoryDashboardWidget from '../components/memory/MemoryDashboardWidget';
 
 export default function DashboardPage() {
@@ -28,33 +30,28 @@ export default function DashboardPage() {
     if (!token) { navigate('/login'); return; }
 
     (async () => {
-      try {
-        // Resume list stored in localStorage (set by UploadPage)
-        const stored = JSON.parse(localStorage.getItem('resumes') || '[]');
-        setResumes(stored);
+      // allSettled throughout: one failing panel must not blank the whole
+      // dashboard. syncResumes already falls back to its cache internally.
+      const [resumeRes, jdRes, matchRes, suggestionRes] = await Promise.allSettled([
+        syncResumes(),
+        listJDs(),
+        listMatches(),
+        listSuggestions({ status: 'pending' }),
+      ]);
 
-        const [jdRes, matchRes, suggestionRes] = await Promise.allSettled([
-          listJDs(),
-          listMatches(),
-          listSuggestions({ status: 'pending' }),
-        ]);
-        if (jdRes.status === 'fulfilled') setJDs(jdRes.value.data?.data?.jds ?? []);
-        if (matchRes.status === 'fulfilled') setMatches(matchRes.value.data?.data?.matches ?? []);
-        if (suggestionRes.status === 'fulfilled') {
-          setPendingSuggestions(suggestionRes.value.data?.data?.suggestions ?? []);
-        }
-      } catch (err) {
-        console.error('Dashboard load error:', err);
-      } finally {
-        setLoading(false);
+      if (resumeRes.status === 'fulfilled') setResumes(resumeRes.value ?? []);
+      if (jdRes.status === 'fulfilled') setJDs(jdRes.value.data?.data?.jds ?? []);
+      if (matchRes.status === 'fulfilled') setMatches(matchRes.value.data?.data?.matches ?? []);
+      if (suggestionRes.status === 'fulfilled') {
+        setPendingSuggestions(suggestionRes.value.data?.data?.suggestions ?? []);
       }
+
+      setLoading(false);
     })();
   }, [navigate]);
 
   function handleLogout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('resumes');
+    clearSession();
     toast.success('Logged out');
     navigate('/login');
   }
@@ -106,6 +103,11 @@ export default function DashboardPage() {
               <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">📄</span>
               <span className="font-semibold text-white mb-1">Upload Resume</span>
               <span className="text-sm text-gray-400">Parse and analyze a new resume</span>
+            </button>
+            <button className="flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all text-left group" onClick={() => navigate('/builder')}>
+              <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">✍️</span>
+              <span className="font-semibold text-white mb-1">Build with AI</span>
+              <span className="text-sm text-gray-400">Draft your resume section by section</span>
             </button>
             <button className="flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all text-left group" onClick={() => navigate('/jd/new')}>
               <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">🔍</span>

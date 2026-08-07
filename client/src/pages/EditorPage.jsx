@@ -55,7 +55,7 @@ export default function EditorPage() {
         <div className="panel-card w-full max-w-md p-6 text-center">
           <p className="text-dark-300">Resume not found.</p>
           <button
-            onClick={() => navigate('/upload')}
+            onClick={() => navigate('/dashboard')}
             className="btn-secondary mt-4"
           >
             Go back
@@ -72,7 +72,7 @@ export default function EditorPage() {
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <button
               id="back-btn"
-              onClick={() => navigate('/upload')}
+              onClick={() => navigate('/dashboard')}
               className="btn-ghost flex items-center gap-2 px-3 py-2"
             >
               <ArrowLeft className="h-4 w-4" />

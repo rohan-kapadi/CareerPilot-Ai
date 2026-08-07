@@ -9,6 +9,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createJD, getJD } from '../api/jdApi';
 import { matchResumeToJD } from '../api/matchApi';
+import { Briefcase, Building, FileText, Sparkles, Zap, BarChart3, Mail } from 'lucide-react';
 
 export default function JDViewerPage() {
   const { id } = useParams();
@@ -74,48 +75,140 @@ export default function JDViewerPage() {
 
   /* ── New JD form ── */
   if (isNew) {
+    const isEnabled = rawText.length >= 100;
     return (
-      <div className="min-h-screen p-6 md:p-12 max-w-4xl mx-auto space-y-8">
-        <header className="flex flex-col gap-2 pb-6 border-b border-white/10">
-          <Link to="/dashboard" className="text-sm text-blue-400 hover:text-blue-300 transition-colors w-fit">← Dashboard</Link>
-          <h1 className="text-3xl font-bold text-white">Analyze Job Description</h1>
+      <div className="min-h-screen p-6 md:p-12 max-w-4xl mx-auto space-y-8 animate-slide-up">
+        <header className="flex flex-col gap-2 pb-6 border-b border-dark-700/50">
+          <Link to="/dashboard" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors w-fit">← Dashboard</Link>
         </header>
 
-        <form className="space-y-6 bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10 shadow-xl" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Job Title <span className="text-gray-500 font-normal">(optional)</span></label>
-            <input className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Software Engineer" />
+        <section>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-300 text-dark-950 font-bold text-sm">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <h2 className="font-display text-3xl font-semibold text-dark-50">Match Role Intelligence</h2>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Company <span className="text-gray-500 font-normal">(optional)</span></label>
-            <input className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. Acme Corp" />
+          <p className="text-dark-400 max-w-3xl mb-8">
+            Paste the job description you're targeting. We'll run a deep ATS analysis, suggest specific wording improvements, 
+            and draft a tailored cover letter based on your matched skills.
+          </p>
+          
+          <div className="bg-dark-900/40 rounded-[2rem] border border-dark-700/50 p-1">
+            <form className="panel-card rounded-[1.5rem] p-5 shadow-lg space-y-4" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 text-sm font-medium text-dark-300 flex items-center gap-2">
+                    <Briefcase className="h-4 w-4" /> Job Title
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. Senior Frontend Engineer"
+                    className="input-field w-full"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 text-sm font-medium text-dark-300 flex items-center gap-2">
+                    <Building className="h-4 w-4" /> Company
+                  </label>
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="e.g. Stripe"
+                    className="input-field w-full"
+                  />
+                </div>
+              </div>
+
+              {storedResumes.length > 0 && (
+                <div>
+                  <label className="mb-1 text-sm font-medium text-dark-300 flex items-center gap-2">
+                    Match against resume (optional)
+                  </label>
+                  <select
+                    className="input-field w-full appearance-none"
+                    value={resumeId}
+                    onChange={(e) => setResumeId(e.target.value)}
+                  >
+                    <option value="">— Skip for now —</option>
+                    {storedResumes.map((r) => (
+                      <option key={r.resumeId} value={r.resumeId}>{r.fileName}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-sm font-medium text-dark-300 flex items-center gap-2">
+                    <FileText className="h-4 w-4" /> Job Description
+                  </label>
+                  <span className={`text-xs ${rawText.length < 100 && rawText.length > 0 ? 'text-amber-400' : 'text-dark-400'}`}>
+                    {rawText.length} chars
+                  </span>
+                </div>
+                <textarea
+                  value={rawText}
+                  onChange={(e) => setRawText(e.target.value)}
+                  placeholder="Paste the full job description here... (Minimum 100 characters)"
+                  rows={8}
+                  className="input-field w-full resize-y p-4"
+                  required
+                />
+                {rawText.length > 0 && rawText.length < 100 && (
+                  <p className="mt-1 text-xs text-amber-400">Please enter at least 100 characters.</p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={!isEnabled || submitting}
+                className={`w-full rounded-2xl py-3 font-medium flex items-center justify-center gap-2 transition-all mt-4 ${
+                  !isEnabled || submitting
+                    ? 'bg-dark-700 text-dark-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-amber-300 via-orange-300 to-teal-300 text-dark-950 shadow-[0_16px_28px_-14px_rgba(251,146,60,0.72)] hover:-translate-y-0.5'
+                }`}
+              >
+                {submitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 rounded-full border-2 border-dark-950 border-t-transparent animate-spin"></span>
+                    Analyzing Job...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Analyze JD <Sparkles className="h-4 w-4" />
+                  </span>
+                )}
+              </button>
+            </form>
           </div>
-          {storedResumes.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Match against resume <span className="text-gray-500 font-normal">(optional)</span></label>
-              <select className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all appearance-none" value={resumeId} onChange={(e) => setResumeId(e.target.value)}>
-                <option value="">— Skip for now —</option>
-                {storedResumes.map((r) => (
-                  <option key={r.resumeId} value={r.resumeId}>{r.fileName}</option>
-                ))}
-              </select>
+
+          {/* ── Mock Empty Dashboard State ── */}
+          <div className="panel-card flex min-h-[400px] flex-col rounded-[1.5rem] p-5">
+            <div className="mb-5 flex w-full items-center gap-2 overflow-x-auto border-b border-dark-700 pb-4">
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all bg-dark-800/50 text-dark-300 opacity-70">
+                <BarChart3 className="h-4 w-4" />
+                ATS Score
+              </div>
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all text-dark-500">
+                <Sparkles className="h-4 w-4" />
+                Enhancements
+              </div>
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all text-dark-500">
+                <Mail className="h-4 w-4" />
+                Cover Letter
+              </div>
             </div>
-          )}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Job Description <span className="text-red-400">*</span></label>
-            <textarea
-              className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-y"
-              rows={14}
-              value={rawText}
-              onChange={(e) => setRawText(e.target.value)}
-              placeholder="Paste the full job description here…"
-              required
-            />
+
+            <div className="flex flex-1 flex-col items-center justify-center text-center animate-pulse">
+              <Zap className="h-10 w-10 text-dark-500 mb-4" />
+              <p className="text-dark-300">Paste a job description to unlock ATS compatibility score.</p>
+            </div>
           </div>
-          <button type="submit" className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed" disabled={submitting}>
-            {submitting ? 'Analyzing…' : '🔍 Analyze JD'}
-          </button>
-        </form>
+        </section>
       </div>
     );
   }

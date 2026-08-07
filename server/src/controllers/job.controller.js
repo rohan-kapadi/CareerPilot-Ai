@@ -3,7 +3,8 @@
  */
 const Resume = require('../models/Resume.model');
 const User = require('../models/User.model');
-const { fetchATSScore, fetchEnhancements, fetchCoverLetter } = require('../services/pythonBridge.service');
+const { fetchATSScore, fetchEnhancements, fetchCoverLetter, fetchTailoredResume } = require('../services/pythonBridge.service');
+const { generatePdf } = require('../services/export.service');
 
 async function getResumeData(resumeId, userId) {
   if (resumeId && resumeId !== 'null' && resumeId !== 'undefined') {
@@ -134,4 +135,45 @@ async function generateCoverLetter(req, res) {
   }
 }
 
-module.exports = { generateAtsScore, generateEnhancements, generateCoverLetter };
+/**
+ * POST /api/job/tailor
+ * Generates a fully tailored resume JSON.
+ */
+async function generateTailoredResume(req, res) {
+  const { jobDescription, resumeId } = req.body;
+  if (!jobDescription) return res.status(400).json({ success: false, message: 'jobDescription is required', data: null });
+
+  try {
+    const { sections } = await getResumeData(resumeId, req.userId);
+    const tailoredResume = await fetchTailoredResume(sections, jobDescription);
+    
+    return res.json({
+      success: true,
+      message: 'Tailored resume generated',
+      data: tailoredResume,
+    });
+  } catch (err) {
+    console.error('Tailored resume generation error:', err.message);
+    const status = err.code === 'PROFILE_EMPTY' ? 400 : 500;
+    return res.status(status).json({ success: false, message: err.message, data: null, code: err.code });
+  }
+}
+
+/**
+ * POST /api/job/tailor/export/pdf
+ * Exports a provided tailored resume JSON as a PDF.
+ */
+async function exportTailoredPdf(req, res) {
+  const { sections } = req.body;
+  if (!sections) return res.status(400).json({ success: false, message: 'sections are required' });
+
+  try {
+    const pdfPath = await generatePdf(`tailored-${Date.now()}`, sections, { template: 'compact' });
+    res.download(pdfPath, `${sections.personalInfo?.name || 'Tailored_Resume'}.pdf`);
+  } catch (err) {
+    console.error('Tailored PDF export error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to generate tailored PDF' });
+  }
+}
+
+module.exports = { generateAtsScore, generateEnhancements, generateCoverLetter, generateTailoredResume, exportTailoredPdf };

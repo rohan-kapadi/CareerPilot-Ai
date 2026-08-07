@@ -19,6 +19,8 @@ const statusBar = document.getElementById('status-bar');
 const statusText = document.getElementById('status-text');
 const analyzeBtn = document.getElementById('ext-analyze-btn');
 const loginBtn = document.getElementById('ext-login-btn');
+const tailorBtn = document.getElementById('ext-tailor-btn');
+const tailorAction = document.getElementById('tailor-action');
 
 const CIRCUMFERENCE = 2 * Math.PI * 54;
 const STATUS_TONES = ['status-success', 'status-error', 'status-warning'];
@@ -52,6 +54,10 @@ function initialize() {
 
   if (analyzeBtn) {
     analyzeBtn.addEventListener('click', analyzeActiveTab);
+  }
+
+  if (tailorBtn) {
+    tailorBtn.addEventListener('click', generateTailoredResume);
   }
 
   chrome.storage.onChanged.addListener((changes) => {
@@ -188,6 +194,8 @@ async function loadAnalysis() {
 }
 
 function resetAnalysisView() {
+  if (tailorAction) tailorAction.classList.add('hidden');
+  
   scoreValue.textContent = '—';
   scoreRing.style.strokeDashoffset = String(CIRCUMFERENCE);
 
@@ -207,6 +215,8 @@ function resetAnalysisView() {
 }
 
 function renderAnalysis(data) {
+  if (tailorAction) tailorAction.classList.remove('hidden');
+
   const score = Math.max(0, Math.min(100, data.atsScore || 0));
   const matched = Array.isArray(data.matchedSkills) ? data.matchedSkills : [];
   const missing = Array.isArray(data.missingSkills) ? data.missingSkills : [];
@@ -336,7 +346,57 @@ function setAnalyzeLoading(loading) {
 
 function setButtonLoading(button, loading, loadingLabel) {
   if (!button) return;
-  if (!button.dataset.defaultText) button.dataset.defaultText = button.textContent;
+  if (!button.dataset.defaultText) button.dataset.defaultText = button.innerHTML;
   button.disabled = loading;
-  button.textContent = loading ? loadingLabel : button.dataset.defaultText;
+  button.innerHTML = loading ? loadingLabel : button.dataset.defaultText;
+}
+
+async function generateTailoredResume() {
+  setButtonLoading(tailorBtn, true, '<span class="icon">...</span>Generating (this takes a moment)...');
+  setStatus('Tailoring resume to job (takes up to 10s)...', 'warning');
+  
+  chrome.runtime.sendMessage({ type: 'GENERATE_TAILORED' }, async (response) => {
+    if (response && response.error) {
+      setButtonLoading(tailorBtn, false, null);
+      setStatus(`Error: ${response.error}`, 'error');
+      return;
+    }
+    
+    // response is the JSON
+    try {
+      setStatus('Generating PDF...', 'warning');
+      const { jwt } = await chrome.storage.local.get(['jwt']);
+      const exportRes = await fetch('http://localhost:5000/api/job/tailor/export/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+        body: JSON.stringify({ sections: response }),
+      });
+      if (!exportRes.ok) throw new Error('PDF Generation failed');
+      
+      const blob = await exportRes.blob();
+      const reader = new FileReader();
+      reader.onload = () => {
+        chrome.downloads.download({
+          url: reader.result,
+          filename: 'Tailored_Resume.pdf',
+          saveAs: true
+        }, (downloadId) => {
+          if (chrome.runtime.lastError) {
+            setStatus(`Download Error: ${chrome.runtime.lastError.message}`, 'error');
+          } else {
+            setStatus('Tailored PDF downloaded!', 'success');
+          }
+          setButtonLoading(tailorBtn, false, null);
+        });
+      };
+      reader.onerror = () => {
+        setStatus('Error converting PDF blob to data URL.', 'error');
+        setButtonLoading(tailorBtn, false, null);
+      };
+      reader.readAsDataURL(blob);
+    } catch (e) {
+      setStatus(`Error: ${e.message}`, 'error');
+      setButtonLoading(tailorBtn, false, null);
+    }
+  });
 }

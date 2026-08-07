@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { analyzeAtsScore, analyzeEnhancements } from '../services/api';
+import { analyzeAtsScore, analyzeEnhancements, generateTailoredResume } from '../services/api';
 
 const JobAnalysisContext = createContext(null);
 
@@ -22,6 +22,8 @@ export const JobAnalysisProvider = ({ children, resumeId, onUpdateSection, curre
   const [atsScore, setAtsScore] = useState(null);
   const [enhancements, setEnhancements] = useState(null);
   const [coverLetter, setCoverLetter] = useState(null);
+  const [tailoredResume, setTailoredResume] = useState(null);
+  const [isTailoring, setIsTailoring] = useState(false);
 
   const [appliedEnhancements, setAppliedEnhancements] = useState(new Set());
 
@@ -141,10 +143,26 @@ export const JobAnalysisProvider = ({ children, resumeId, onUpdateSection, curre
     setAtsScore(null);
     setEnhancements(null);
     setCoverLetter(null);
+    setTailoredResume(null);
     setAppliedEnhancements(new Set());
     setCoverLetterHistory([]);
     setAnalysisStatus('idle');
   }, []);
+
+  const runTailorResume = useCallback(async () => {
+    if (!jobDescription) return;
+    setIsTailoring(true);
+    try {
+      const response = await generateTailoredResume({ resumeId, jobDescription });
+      setTailoredResume(response.data.data);
+      toast.success('Tailored resume generated successfully!');
+    } catch (error) {
+      console.error('Tailor error:', error);
+      toast.error('Failed to generate tailored resume');
+    } finally {
+      setIsTailoring(false);
+    }
+  }, [resumeId, jobDescription]);
 
   return (
     <JobAnalysisContext.Provider
@@ -160,6 +178,10 @@ export const JobAnalysisProvider = ({ children, resumeId, onUpdateSection, curre
         enhancements,
         coverLetter,
         setCoverLetter,
+        tailoredResume,
+        setTailoredResume,
+        isTailoring,
+        runTailorResume,
         appliedEnhancements,
         markEnhancementApplied,
         coverLetterParams,

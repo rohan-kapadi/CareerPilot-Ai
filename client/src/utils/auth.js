@@ -14,6 +14,9 @@ export function getStoredUser() {
 export function clearSession() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  // Also drop the cached resume list — otherwise the next person to sign in on
+  // this machine sees the previous user's resumes in every picker.
+  localStorage.removeItem('resumes');
 }
 
 export function requireAuth(navigate) {

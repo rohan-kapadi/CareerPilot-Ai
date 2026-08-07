@@ -37,6 +37,8 @@ export const loginUser = (data) => api.post('/auth/login', data);
 // ─── User Profile ───
 export const getUserProfile = () => api.get('/user/profile');
 export const putUserProfile = (data) => api.put('/user/profile', data);
+export const exportProfilePdf = () => api.post('/user/profile/export/pdf', {}, { responseType: 'blob' });
+export const exportProfileDocx = () => api.post('/user/profile/export/docx', {}, { responseType: 'blob' });
 
 // ─── Resume ───
 export const uploadResume = (formData) =>
@@ -50,6 +52,8 @@ export const uploadResume = (formData) =>
     },
   });
 
+export const listResumes = () => api.get('/resume');
+
 export const getResume = (id) => api.get(`/resume/${id}`);
 
 export const updateSections = (id, sections) =>
@@ -62,6 +66,8 @@ export const patchSkills = (id, add = [], remove = []) =>
 export const analyzeAtsScore = (data) => api.post('/job/ats-score', data);
 export const analyzeEnhancements = (data) => api.post('/job/enhance', data);
 export const generateCoverLetter = (data) => api.post('/job/cover-letter', data);
+export const generateTailoredResume = (data) => api.post('/job/tailor', data);
+export const exportTailoredPdf = (sections) => api.post('/job/tailor/export/pdf', { sections }, { responseType: 'blob' });
 
 // Kept for backward compatibility while old UI is replaced
 export const analyzeJob = (jobDescription, resumeId) =>

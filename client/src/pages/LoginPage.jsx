@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { registerUser, loginUser } from '../services/api';
+import { getAuthToken } from '../utils/auth';
 import toast from 'react-hot-toast';
 import {
   ArrowRight,
@@ -33,9 +34,25 @@ const FEATURE_LIST = [
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isRegister, setIsRegister] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
+
+  /**
+   * Where to land after signing in. Defaults to the dashboard — the home base
+   * that surfaces resumes, memory, pending approvals and match history. If the
+   * user was bounced here from a deep link, ProtectedRoute stashed it in
+   * location.state.from, so send them back there instead.
+   */
+  const redirectTo = location.state?.from || '/dashboard';
+
+  // Already signed in? Don't show the form again.
+  useEffect(() => {
+    if (getAuthToken()) {
+      navigate(redirectTo, { replace: true });
+    }
+  }, [navigate, redirectTo]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +66,7 @@ export default function LoginPage() {
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
       toast.success(data.message);
-      navigate('/upload');
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Something went wrong');
     } finally {

@@ -4,6 +4,7 @@ const authMiddleware = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload.middleware');
 const {
   uploadResume,
+  listResumes,
   getResume,
   updateSections,
   patchSkills,
@@ -17,6 +18,7 @@ const {
 // All resume routes require authentication
 router.use(authMiddleware);
 
+router.get('/', listResumes);
 router.post('/upload', upload.single('file'), uploadResume);
 
 // ── Phase 7: version history, comparison & export ──

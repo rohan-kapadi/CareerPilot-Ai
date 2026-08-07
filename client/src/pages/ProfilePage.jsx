@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUserProfile, putUserProfile } from '../services/api';
+import { getUserProfile, putUserProfile, exportProfilePdf } from '../services/api';
 import toast from 'react-hot-toast';
 import {
   ArrowLeft,
@@ -14,6 +14,7 @@ import {
   Sparkles,
   User,
   X,
+  Download,
 } from 'lucide-react';
 import ResumeEditor from '../components/ResumeEditor';
 import ThemeToggle from '../components/ThemeToggle';
@@ -32,6 +33,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (!requireAuth(navigate)) {
@@ -72,10 +74,10 @@ export default function ProfilePage() {
         <div className="panel-card w-full max-w-md p-6 text-center">
           <p className="text-dark-300">We could not load your profile right now.</p>
           <button
-            onClick={() => navigate('/upload')}
+            onClick={() => navigate('/dashboard')}
             className="btn-secondary mt-5"
           >
-            Back to Upload
+            Back to Dashboard
           </button>
         </div>
       </div>
@@ -114,13 +116,34 @@ export default function ProfilePage() {
     }
   };
 
+  const handleDownloadPdf = async () => {
+    setDownloading(true);
+    try {
+      const response = await exportProfilePdf();
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${displayName || 'Profile'}_Resume.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Resume downloaded!');
+    } catch {
+      toast.error('Failed to download resume');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="app-shell">
       <header className="sticky top-0 z-50 border-b border-dark-700/70 bg-dark-950/75 backdrop-blur-xl">
         <div className="page-wrap flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={() => navigate('/upload')}
+              onClick={() => navigate('/dashboard')}
               className="btn-ghost flex items-center gap-2 px-3 py-2"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -183,13 +206,23 @@ export default function ProfilePage() {
               </p>
 
               {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="btn-primary flex items-center gap-2 shadow-[0_16px_28px_-16px_rgba(251,146,60,0.85)]"
-                >
-                  <PencilLine className="h-4 w-4" />
-                  Edit profile sections
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn-primary flex items-center gap-2 shadow-[0_16px_28px_-16px_rgba(251,146,60,0.85)]"
+                  >
+                    <PencilLine className="h-4 w-4" />
+                    Edit profile sections
+                  </button>
+                  <button
+                    onClick={handleDownloadPdf}
+                    disabled={downloading}
+                    className="btn-secondary flex items-center gap-2"
+                  >
+                    {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                    Download ATS Resume
+                  </button>
+                </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   <button

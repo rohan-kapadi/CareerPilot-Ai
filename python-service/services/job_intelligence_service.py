@@ -180,6 +180,29 @@ Para 4 — THE CLOSE (2-3 sentences):
 
 Return ONLY the JSON. No markdown wrappers."""
 
+TAILOR_SYSTEM_PROMPT = """You are an expert ATS (Applicant Tracking System) optimizer and professional resume writer. Your goal is to completely rewrite and tailor a candidate's resume to perfectly match a provided Job Description (JD). 
+
+Your tailored resume MUST:
+1. Maintain the exact JSON schema provided.
+2. Rewrite the professional summary to highlight the candidate's alignment with the core requirements of the JD.
+3. Rewrite the experience bullets using the STAR method, mirroring the exact terminology, keywords, and tone used in the JD.
+4. STRICTLY DO NOT add any new skills that are not already present in the candidate's original resume data. Only highlight, emphasize, and map the skills they ACTUALLY possess to the JD requirements.
+5. Never fabricate metrics (use placeholders like [X%] if needed).
+6. Preserve the candidate's authentic voice, facts, and actual work history. Do not invent experience."""
+
+TAILOR_USER_PROMPT = """Rewrite and tailor the following resume against the job description and return the updated JSON.
+
+## RESUME DATA
+{resume_json}
+
+## JOB DESCRIPTION
+{job_description}
+
+## OUTPUT SCHEMA (strict JSON)
+The returned JSON MUST perfectly match the input schema (with keys like 'personalInfo', 'summary', 'experience', 'education', 'projects', 'skills', etc.), but with the content rewritten to be highly optimized for the JD.
+
+Return ONLY the JSON. No markdown, no explanation."""
+
 async def _call_mistral_json(system_prompt: str, user_prompt: str) -> dict:
     if not api_key:
         raise ValueError("MISTRAL_API_KEY is not configured.")
@@ -240,3 +263,10 @@ async def generate_cover_letter(resume_json: dict, job_description: str, job_tit
         format=format
     )
     return await _call_mistral_json(COVER_LETTER_SYSTEM_PROMPT, prompt)
+
+async def generate_tailored_resume(resume_json: dict, job_description: str) -> dict:
+    prompt = TAILOR_USER_PROMPT.format(
+        resume_json=json.dumps(resume_json, indent=2),
+        job_description=job_description
+    )
+    return await _call_mistral_json(TAILOR_SYSTEM_PROMPT, prompt)

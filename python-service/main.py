@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from routers import parse, skills, match, ats, enhance, cover_letter, skill_gap, course_recommender
+from routers import parse, skills, match, ats, enhance, cover_letter, skill_gap, course_recommender, tailor
 
 app = FastAPI(
     title="AI Resume Builder - Python Service",
@@ -36,6 +36,7 @@ app.include_router(skills.router, tags=["Skill Extraction"])
 app.include_router(match.router, tags=["Skill Matching"])
 app.include_router(ats.router, tags=["Job Intelligence"])
 app.include_router(enhance.router, tags=["Job Intelligence"])
+app.include_router(tailor.router, tags=["Job Intelligence"])
 app.include_router(cover_letter.router, tags=["Job Intelligence"])
 app.include_router(skill_gap.router, tags=["Skill Gap Analysis"])
 app.include_router(course_recommender.router, tags=["Course Recommendations"])

@@ -41,6 +41,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch((err) => sendResponse({ error: err.message }));
     return true;
   }
+
+  if (message.type === 'GENERATE_TAILORED') {
+    handleGenerateTailored()
+      .then(sendResponse)
+      .catch((err) => sendResponse({ error: err.message }));
+    return true;
+  }
 });
 
 async function getAuthStatus() {
@@ -137,10 +144,30 @@ async function handleJobDescription(jobDescription) {
   // Store results for popup
   await chrome.storage.local.set({
     lastAnalysis: analysisData,
+    lastJobDescription: jobDescription,
     lastAnalyzedAt: new Date().toISOString(),
   });
 
   return analysisData;
+}
+
+async function handleGenerateTailored() {
+  const { jwt, lastJobDescription } = await chrome.storage.local.get(['jwt', 'lastJobDescription']);
+  if (!jwt) throw new Error('Not authenticated');
+  if (!lastJobDescription) throw new Error('Analyze a job first.');
+
+  const res = await fetch(`${API_BASE}/job/tailor`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+    body: JSON.stringify({ jobDescription: lastJobDescription }),
+  });
+  
+  const data = await res.json();
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to generate tailored resume');
+  }
+  
+  return data.data; // Return the tailored resume sections
 }
 
 async function handleAddSkill(skill) {

@@ -2,6 +2,7 @@
  * User Controller — Profile and skills management
  */
 const User = require('../models/User.model');
+const { generateDocx, generatePdf } = require('../services/export.service');
 
 /**
  * GET /api/user/profile
@@ -147,4 +148,54 @@ async function updateSettings(req, res) {
   });
 }
 
-module.exports = { getProfile, patchUserSkills, updateProfile, updateSettings };
+/**
+ * POST /api/user/profile/export/pdf
+ * Export the user's global profile as a PDF resume.
+ */
+async function exportProfilePdf(req, res) {
+  const user = await User.findById(req.userId);
+  if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+  try {
+    const sections = {
+      personalInfo: user.personalInfo,
+      summary: user.summary,
+      experience: user.experience,
+      education: user.education,
+      projects: user.projects,
+      skills: user.skills,
+    };
+    const pdfPath = await generatePdf(`profile-${user._id}`, sections, { template: 'compact' });
+    res.download(pdfPath, `${user.personalInfo?.name || 'Resume'}.pdf`);
+  } catch (err) {
+    console.error('PDF export error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to generate PDF' });
+  }
+}
+
+/**
+ * POST /api/user/profile/export/docx
+ * Export the user's global profile as a DOCX resume.
+ */
+async function exportProfileDocx(req, res) {
+  const user = await User.findById(req.userId);
+  if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+  try {
+    const sections = {
+      personalInfo: user.personalInfo,
+      summary: user.summary,
+      experience: user.experience,
+      education: user.education,
+      projects: user.projects,
+      skills: user.skills,
+    };
+    const docxPath = await generateDocx(`profile-${user._id}`, sections, { template: 'compact' });
+    res.download(docxPath, `${user.personalInfo?.name || 'Resume'}.docx`);
+  } catch (err) {
+    console.error('DOCX export error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to generate DOCX' });
+  }
+}
+
+module.exports = { getProfile, patchUserSkills, updateProfile, updateSettings, exportProfilePdf, exportProfileDocx };

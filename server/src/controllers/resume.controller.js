@@ -104,6 +104,28 @@ async function uploadResume(req, res) {
 }
 
 /**
+ * GET /api/resume
+ * List the current user's resumes, newest first.
+ *
+ * The client previously had no way to ask the server for this, so the dashboard,
+ * JD matcher and suggestion pickers all read a localStorage cache that nothing
+ * ever populated — they were permanently empty. This is the source of truth;
+ * the cache is now just a fast path.
+ */
+async function listResumes(req, res) {
+  const resumes = await Resume.find({ userId: req.userId })
+    .sort({ updatedAt: -1 })
+    .select('originalFileName fileType atsScore createdAt updatedAt sections.personalInfo.name')
+    .lean();
+
+  res.json({
+    success: true,
+    message: 'Resumes fetched successfully',
+    data: { resumes },
+  });
+}
+
+/**
  * GET /api/resume/:id
  * Fetch full resume JSON.
  */
@@ -480,6 +502,7 @@ async function getExportOptions(req, res) {
 
 module.exports = {
   uploadResume,
+  listResumes,
   getResume,
   updateSections,
   patchSkills,

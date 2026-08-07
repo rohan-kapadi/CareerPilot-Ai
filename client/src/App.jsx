@@ -17,7 +17,10 @@ import PrivacyDashboardPage from './pages/PrivacyDashboardPage';
 import AISuggestionsPage from './pages/AISuggestionsPage';
 import RoadmapPage from './pages/RoadmapPage';
 import SettingsPage from './pages/SettingsPage';
+import NotFoundPage from './pages/NotFoundPage';
+import ProtectedRoute from './components/layout/ProtectedRoute';
 import { MemoryProvider } from './context/MemoryContext';
+import { getAuthToken } from './utils/auth';
 
 const THEME_KEY = 'roleready_theme';
 
@@ -80,26 +83,38 @@ function App() {
           }}
         />
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Root sends signed-in users to their dashboard, everyone else to sign in */}
+          <Route
+            path="/"
+            element={<Navigate to={getAuthToken() ? '/dashboard' : '/login'} replace />}
+          />
+
+          {/* Public */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/editor/:resumeId" element={<EditorPage />} />
-          <Route path="/download/:resumeId" element={<DownloadPage />} />
-          <Route path="/resume/:id" element={<ResumeViewerPage />} />
-          <Route path="/jd/new" element={<JDViewerPage />} />
-          <Route path="/jd/:id" element={<JDViewerPage />} />
-          <Route path="/chat" element={<CareerAssistantPage />} />
-          <Route path="/chat/:conversationId" element={<CareerAssistantPage />} />
-          <Route path="/builder" element={<ResumeBuilderPage />} />
-          <Route path="/builder/:resumeId" element={<ResumeBuilderPage />} />
-          <Route path="/memory" element={<MemoryDashboardPage />} />
-          <Route path="/explain/:matchId" element={<ExplainabilityPage />} />
-          <Route path="/privacy" element={<PrivacyDashboardPage />} />
-          <Route path="/suggestions" element={<AISuggestionsPage />} />
-          <Route path="/roadmap/:skillGapId" element={<RoadmapPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+
+          {/* Protected — the guard runs before the page renders, so no
+              authenticated request is ever fired without a token. */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/editor/:resumeId" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
+          <Route path="/download/:resumeId" element={<ProtectedRoute><DownloadPage /></ProtectedRoute>} />
+          <Route path="/resume/:id" element={<ProtectedRoute><ResumeViewerPage /></ProtectedRoute>} />
+          <Route path="/jd/new" element={<ProtectedRoute><JDViewerPage /></ProtectedRoute>} />
+          <Route path="/jd/:id" element={<ProtectedRoute><JDViewerPage /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><CareerAssistantPage /></ProtectedRoute>} />
+          <Route path="/chat/:conversationId" element={<ProtectedRoute><CareerAssistantPage /></ProtectedRoute>} />
+          <Route path="/builder" element={<ProtectedRoute><ResumeBuilderPage /></ProtectedRoute>} />
+          <Route path="/builder/:resumeId" element={<ProtectedRoute><ResumeBuilderPage /></ProtectedRoute>} />
+          <Route path="/memory" element={<ProtectedRoute><MemoryDashboardPage /></ProtectedRoute>} />
+          <Route path="/explain/:matchId" element={<ProtectedRoute><ExplainabilityPage /></ProtectedRoute>} />
+          <Route path="/privacy" element={<ProtectedRoute><PrivacyDashboardPage /></ProtectedRoute>} />
+          <Route path="/suggestions" element={<ProtectedRoute><AISuggestionsPage /></ProtectedRoute>} />
+          <Route path="/roadmap/:skillGapId" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+
+          {/* Catch-all — without this an unknown URL renders a blank page */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </MemoryProvider>
     </BrowserRouter>

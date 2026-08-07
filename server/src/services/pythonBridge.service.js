@@ -68,6 +68,17 @@ async function fetchEnhancements(resumeJson, jobDescription, jobTitle, companyNa
 }
 
 /**
+ * Job Intelligence: Tailor Resume
+ */
+async function fetchTailoredResume(resumeJson, jobDescription) {
+  const { data } = await pythonClient.post('/tailor', {
+    resume_json: resumeJson,
+    job_description: jobDescription,
+  });
+  return data.tailored_resume;
+}
+
+/**
  * Job Intelligence: Generate Cover Letter
  */
 async function fetchCoverLetter(resumeJson, jobDescription, jobTitle, companyName, candidateName, params = {}) {
@@ -121,6 +132,7 @@ module.exports = {
   matchSkills,
   fetchATSScore,
   fetchEnhancements,
+  fetchTailoredResume,
   fetchCoverLetter,
   analyzeSkillGap,
   fetchCourseRecommendations,
