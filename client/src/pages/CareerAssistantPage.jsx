@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { sendMessage, getConversation, listConversations } from '../api/chatApi';
-import { updateSections } from '../services/api';
+import { acceptSectionDraft } from '../api/suggestionApi';
 import ChatThread from '../components/chat/ChatThread';
 import MemoryCard from '../components/memory/MemoryCard';
 import { useMemoryCards } from '../hooks/useMemoryCards';
@@ -158,10 +158,17 @@ export default function CareerAssistantPage() {
     }
 
     try {
-      await updateSections(resumeId, sectionDraft.draft);
+      // Phase 6: routed through the Suggestion model so the change is auditable
+      // and only the drafted section is touched.
+      await acceptSectionDraft({
+        resumeId,
+        draft: sectionDraft.draft,
+        section: sectionDraft.section,
+        conversationId: activeConvId || undefined,
+      });
       toast.success(`${sectionDraft.section} saved to resume ✅`);
-    } catch {
-      toast.error('Failed to save section');
+    } catch (err) {
+      toast.error(err.response?.data?.message ?? 'Failed to save section');
     }
   }
 

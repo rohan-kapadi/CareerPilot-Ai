@@ -71,6 +71,31 @@ const userSchema = new mongoose.Schema(
       trim: true,
       maxlength: 100,
     },
+    /**
+     * User preferences — Phase 8 (PROJECT.md §13.12).
+     *
+     * These set DEFAULTS for future decisions only. They never retroactively
+     * change a memory the user already timeboxed, and they never bypass an
+     * approval gate: autoRedactFlaggedPII only pre-ticks the redaction boxes in
+     * the export dialog, it does not redact anything on its own.
+     */
+    settings: {
+      /** Default timebox offered on new Memory Cards */
+      defaultMemoryTimebox: {
+        type: String,
+        enum: ['session', '30d', '90d', 'long_term'],
+        default: '30d',
+      },
+      notifyExpiringMemories: { type: Boolean, default: true },
+      notifyPendingSuggestions: { type: Boolean, default: true },
+      defaultExportTemplate: {
+        type: String,
+        enum: ['modern', 'classic', 'compact'],
+        default: 'modern',
+      },
+      /** Pre-select flagged PII in the export dialog (user still confirms) */
+      autoRedactFlaggedPII: { type: Boolean, default: true },
+    },
   },
   {
     timestamps: { createdAt: 'createdAt', updatedAt: false },

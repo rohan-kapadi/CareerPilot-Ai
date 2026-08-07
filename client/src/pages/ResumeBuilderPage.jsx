@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { sendMessage } from '../api/chatApi';
-import { updateSections, getResume } from '../services/api';
+import { getResume } from '../services/api';
+import { acceptSectionDraft } from '../api/suggestionApi';
 import SectionEditor from '../components/resume/SectionEditor';
 
 const SECTIONS = [
@@ -115,7 +116,14 @@ export default function ResumeBuilderPage() {
       return;
     }
     try {
-      await updateSections(resumeId, sectionPayload);
+      // Phase 6: the accept chip is the approval gate — the draft is recorded as
+      // a Suggestion and applied to just this section, leaving the rest intact.
+      await acceptSectionDraft({
+        resumeId,
+        draft: sectionPayload,
+        section: activeSection,
+        conversationId: convId || undefined,
+      });
       toast.success(`${activeSection} saved! ✅`);
       setCompleted(prev => new Set([...prev, activeSection]));
       setCurrentDraft(null);

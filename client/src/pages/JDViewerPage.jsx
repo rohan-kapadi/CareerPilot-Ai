@@ -153,6 +153,30 @@ export default function JDViewerPage() {
         </div>
       )}
 
+      {/* ── Phase 6: turn detected gaps into an approval-gated roadmap / suggestions ── */}
+      {(extracted?.skillsToImprove?.length ?? 0) > 0 && (
+        <div className="flex flex-col gap-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-amber-200/90">
+            {extracted.skillsToImprove.length} skill gap
+            {extracted.skillsToImprove.length !== 1 ? 's' : ''} detected for this role.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to={`/suggestions?jdId=${jd._id}${resumeId ? `&resumeId=${resumeId}` : ''}`}
+              className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            >
+              🛠️ Improve resume
+            </Link>
+            <Link
+              to={`/roadmap/${jd._id}`}
+              className="rounded-xl bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-500"
+            >
+              🗺️ Build learning roadmap
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* ── Seniority badge ── */}
       {extracted?.seniority && extracted.seniority !== 'unspecified' && (
         <div className="inline-flex items-center px-4 py-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl text-sm font-medium">

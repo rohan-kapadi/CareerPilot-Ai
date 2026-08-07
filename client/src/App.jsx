@@ -14,6 +14,9 @@ import ResumeBuilderPage from './pages/ResumeBuilderPage';
 import MemoryDashboardPage from './pages/MemoryDashboardPage';
 import ExplainabilityPage from './pages/ExplainabilityPage';
 import PrivacyDashboardPage from './pages/PrivacyDashboardPage';
+import AISuggestionsPage from './pages/AISuggestionsPage';
+import RoadmapPage from './pages/RoadmapPage';
+import SettingsPage from './pages/SettingsPage';
 import { MemoryProvider } from './context/MemoryContext';
 
 const THEME_KEY = 'roleready_theme';
@@ -94,6 +97,9 @@ function App() {
           <Route path="/memory" element={<MemoryDashboardPage />} />
           <Route path="/explain/:matchId" element={<ExplainabilityPage />} />
           <Route path="/privacy" element={<PrivacyDashboardPage />} />
+          <Route path="/suggestions" element={<AISuggestionsPage />} />
+          <Route path="/roadmap/:skillGapId" element={<RoadmapPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </MemoryProvider>
     </BrowserRouter>

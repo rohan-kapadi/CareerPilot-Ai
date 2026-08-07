@@ -98,4 +98,53 @@ async function updateProfile(req, res) {
   });
 }
 
-module.exports = { getProfile, patchUserSkills, updateProfile };
+/**
+ * PUT /api/user/settings — Phase 8
+ * Body: any subset of the settings object.
+ *
+ * Whitelisted per-key so a client can't write arbitrary fields onto the user
+ * document, and so unknown keys fail loudly rather than being silently dropped.
+ */
+const ALLOWED_SETTINGS = [
+  'defaultMemoryTimebox',
+  'notifyExpiringMemories',
+  'notifyPendingSuggestions',
+  'defaultExportTemplate',
+  'autoRedactFlaggedPII',
+];
+
+async function updateSettings(req, res) {
+  const incoming = req.body?.settings ?? req.body ?? {};
+  const updateDoc = {};
+
+  for (const [key, value] of Object.entries(incoming)) {
+    if (!ALLOWED_SETTINGS.includes(key)) continue;
+    updateDoc[`settings.${key}`] = value;
+  }
+
+  if (Object.keys(updateDoc).length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: `No valid settings provided. Allowed keys: ${ALLOWED_SETTINGS.join(', ')}`,
+      data: null,
+    });
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.userId,
+    { $set: updateDoc },
+    { new: true, runValidators: true }
+  );
+
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found', data: null });
+  }
+
+  res.json({
+    success: true,
+    message: 'Settings updated',
+    data: { settings: user.settings },
+  });
+}
+
+module.exports = { getProfile, patchUserSkills, updateProfile, updateSettings };

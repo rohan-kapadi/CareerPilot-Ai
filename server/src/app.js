@@ -1,5 +1,7 @@
+// Must be first — loads and validates .env before any module reads process.env.
+const config = require('./config/env');
+
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 require('express-async-errors');
 const dns = require('dns');
 
@@ -7,9 +9,10 @@ const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
+
+const { connectDB } = require('./config/db');
 
 const authRoutes = require('./routes/auth.routes');
 const resumeRoutes = require('./routes/resume.routes');
@@ -21,6 +24,8 @@ const matchRoutes = require('./routes/matchRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const memoryRoutes = require('./routes/memoryRoutes');
 const privacyRoutes = require('./routes/privacyRoutes');
+const suggestionRoutes = require('./routes/suggestionRoutes');
+const roadmapRoutes = require('./routes/roadmapRoutes');
 
 // Phase 3: wire memoryAgent into plannerAgent middleware chain
 const plannerAgent = require('./agents/plannerAgent');
@@ -35,12 +40,14 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  process.env.CLIENT_URL,
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  config.clientUrl,
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('chrome-extension://')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -60,6 +67,8 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // --------------- Routes ---------------
 app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
+// REST-plural alias documented in phases-1.md §1 — same router, both paths work.
+app.use('/api/resumes', resumeRoutes);
 app.use('/api/job', jobRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/user', userRoutes);
@@ -68,6 +77,8 @@ app.use('/api/matching', matchRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/memory', memoryRoutes);
 app.use('/api/privacy', privacyRoutes);
+app.use('/api/suggestions', suggestionRoutes);
+app.use('/api/roadmap', roadmapRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Server is running' });
@@ -78,20 +89,10 @@ app.get('/api/health', (req, res) => {
 app.use(errorHandler);
 
 // --------------- Database & Start ---------------
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ai_resume';
-
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log('✅ Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
+connectDB().then(() => {
+  app.listen(config.port, () => {
+    console.log(`🚀 Server running on http://localhost:${config.port} [${config.env}]`);
   });
+});
 
 module.exports = app;

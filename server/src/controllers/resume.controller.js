@@ -1,11 +1,26 @@
 /**
  * Resume Controller — Upload, Fetch, Update sections, Skills patch
+ *
+ * Phase 6 boundary note:
+ *   updateSections() and patchSkills() write to Resume.sections directly, and
+ *   that is intentional — they carry *human-authored* edits typed into the
+ *   editor. The Phase 6 rule ("nothing mutates Resume.sections except
+ *   suggestionController") governs AI-generated content: any text an agent
+ *   drafts must reach the resume through a Suggestion the user approves.
+ *   The Resume Builder's inline accept therefore posts to
+ *   /api/suggestions/from-draft, not to these endpoints.
  */
 const path = require('path');
 const Resume = require('../models/Resume.model');
 const User = require('../models/User.model');
+const ResumeVersion = require('../models/ResumeVersion');
+const PrivacyFlag = require('../models/PrivacyFlag');
 const { parseResumeText } = require('../services/pythonBridge.service');
 const { extractResumeText } = require('../services/resumeParser.service');
+const versionService = require('../services/versionService');
+const { redactResume } = require('../services/redactionService');
+const { generateDocx, generatePdf, listTemplates } = require('../services/export.service');
+const { computeDiff, summarizeDiff } = require('../utils/sectionDiff');
 
 /**
  * POST /api/resume/upload
@@ -76,6 +91,10 @@ async function uploadResume(req, res) {
   if (Object.keys(updateDoc).length > 0) {
     await User.findByIdAndUpdate(req.userId, updateDoc);
   }
+
+  // Phase 7: snapshot the resume as it arrived, so version 1 is always the
+  // untouched original the user can roll back to.
+  await versionService.ensureBaseline(resume._id, req.userId, resume.sections);
 
   res.status(201).json({
     success: true,
@@ -219,4 +238,255 @@ async function patchSkills(req, res) {
   });
 }
 
-module.exports = { uploadResume, getResume, updateSections, patchSkills };
+/* ──────────────────────────────────────────────────────────────
+   Phase 7 — Version History, Comparison & Export
+   ────────────────────────────────────────────────────────────── */
+
+/**
+ * GET /api/resume/:id/versions
+ * Version timeline, newest first. Snapshots are omitted — the list view only
+ * needs metadata, and full sections make the payload large.
+ */
+async function getVersions(req, res) {
+  const resume = await Resume.findOne({ _id: req.params.id, userId: req.userId }).select('_id');
+  if (!resume) {
+    return res.status(404).json({ success: false, message: 'Resume not found', data: null });
+  }
+
+  const versions = await ResumeVersion.find({ resumeId: req.params.id, userId: req.userId })
+    .sort({ versionNumber: -1 })
+    .select('-sections')
+    .populate('suggestionId', 'title suggestionType')
+    .lean();
+
+  return res.json({
+    success: true,
+    message: 'Version history retrieved',
+    data: { versions, currentVersion: versions[0]?.versionNumber ?? 0 },
+  });
+}
+
+/**
+ * POST /api/resume/:id/versions/:version/restore
+ *
+ * Append-only: restoring does not delete anything, it snapshots the restored
+ * state as a new version. History stays a complete record (PROJECT.md §6.9).
+ */
+async function restoreVersion(req, res) {
+  const resume = await Resume.findOne({ _id: req.params.id, userId: req.userId }).lean();
+  if (!resume) {
+    return res.status(404).json({ success: false, message: 'Resume not found', data: null });
+  }
+
+  const target = await ResumeVersion.findOne({
+    resumeId: req.params.id,
+    userId: req.userId,
+    versionNumber: Number(req.params.version),
+  }).lean();
+
+  if (!target) {
+    return res.status(404).json({ success: false, message: 'Version not found', data: null });
+  }
+
+  const changes = computeDiff(resume.sections, target.sections);
+  if (!changes.length) {
+    return res.json({
+      success: true,
+      message: `Your resume already matches version ${target.versionNumber}.`,
+      data: { resume, version: null },
+    });
+  }
+
+  const updated = await Resume.findOneAndUpdate(
+    { _id: req.params.id, userId: req.userId },
+    { $set: { sections: target.sections } },
+    { new: true, runValidators: true }
+  );
+
+  const version = await versionService.recordChange(
+    req.params.id,
+    req.userId,
+    resume.sections,
+    target.sections,
+    {
+      origin: 'restore',
+      diffSummary: `Restored version ${target.versionNumber} — ${summarizeDiff(changes)}`,
+    }
+  );
+
+  return res.json({
+    success: true,
+    message: `Restored version ${target.versionNumber}.`,
+    data: { resume: updated, version, changes },
+  });
+}
+
+/**
+ * GET /api/resume/:id/compare?v1=&v2=
+ * Side-by-side comparison of two versions (§6.10). Diff is computed
+ * server-side against the structured sections, not rendered text.
+ */
+async function compareVersions(req, res) {
+  const { v1, v2 } = req.query;
+
+  if (!v1 || !v2) {
+    return res.status(400).json({
+      success: false,
+      message: 'Both v1 and v2 query parameters are required.',
+      data: null,
+    });
+  }
+
+  const resume = await Resume.findOne({ _id: req.params.id, userId: req.userId }).select('_id');
+  if (!resume) {
+    return res.status(404).json({ success: false, message: 'Resume not found', data: null });
+  }
+
+  const [left, right] = await Promise.all([
+    ResumeVersion.findOne({
+      resumeId: req.params.id,
+      userId: req.userId,
+      versionNumber: Number(v1),
+    }).lean(),
+    ResumeVersion.findOne({
+      resumeId: req.params.id,
+      userId: req.userId,
+      versionNumber: Number(v2),
+    }).lean(),
+  ]);
+
+  if (!left || !right) {
+    return res.status(404).json({
+      success: false,
+      message: 'One or both versions were not found.',
+      data: null,
+    });
+  }
+
+  const changes = computeDiff(left.sections, right.sections);
+
+  return res.json({
+    success: true,
+    message: 'Comparison ready',
+    data: {
+      left: {
+        versionNumber: left.versionNumber,
+        sections: left.sections,
+        createdAt: left.createdAt,
+        diffSummary: left.diffSummary,
+      },
+      right: {
+        versionNumber: right.versionNumber,
+        sections: right.sections,
+        createdAt: right.createdAt,
+        diffSummary: right.diffSummary,
+      },
+      changes,
+      summary: summarizeDiff(changes),
+    },
+  });
+}
+
+/**
+ * POST /api/resume/:id/export
+ * Body: { format: 'pdf'|'docx', template?, redactFieldPaths?: [String], preview?: Boolean }
+ *
+ * DELIBERATELY AI-FREE (PROJECT.md §6.8, phases-1.md §7 handoff): no LLM agent
+ * touches this path. Rendering is pure template substitution.
+ *
+ * Redaction happens here, at export time only — the stored Resume.sections is
+ * never mutated (phases-1.md §5 handoff).
+ */
+async function exportResume(req, res) {
+  const { format = 'pdf', template = 'modern', redactFieldPaths = [], preview = false } = req.body;
+
+  const resume = await Resume.findOne({ _id: req.params.id, userId: req.userId }).lean();
+  if (!resume) {
+    return res.status(404).json({ success: false, message: 'Resume not found', data: null });
+  }
+
+  const paths = Array.isArray(redactFieldPaths) ? redactFieldPaths.filter(Boolean) : [];
+  // redactResume deep-copies before redacting, so `resume` itself is untouched.
+  const exportSource = paths.length ? redactResume(resume, paths) : resume;
+
+  // Preview mode returns the redacted content without generating a file.
+  if (preview) {
+    return res.json({
+      success: true,
+      message: paths.length ? `${paths.length} field(s) will be redacted.` : 'No redactions applied.',
+      data: {
+        sections: exportSource.sections,
+        redactedPaths: paths,
+        templates: listTemplates(),
+      },
+    });
+  }
+
+  if (!['pdf', 'docx'].includes(format)) {
+    return res.status(400).json({
+      success: false,
+      message: "format must be 'pdf' or 'docx'.",
+      data: null,
+    });
+  }
+
+  const suffix = paths.length ? '-redacted' : '';
+  const displayName = exportSource.sections?.personalInfo?.name || 'Resume';
+
+  try {
+    const filePath =
+      format === 'pdf'
+        ? await generatePdf(resume._id.toString(), exportSource.sections, { template, suffix })
+        : await generateDocx(resume._id.toString(), exportSource.sections, { suffix });
+
+    // Only cache the path when nothing was redacted — a redacted export is a
+    // one-off artifact, not the canonical file for this resume.
+    if (!paths.length) {
+      await Resume.findByIdAndUpdate(resume._id, {
+        [format === 'pdf' ? 'exportedPdfPath' : 'exportedDocxPath']: filePath,
+      });
+    }
+
+    return res.download(filePath, `${displayName}${suffix}.${format}`);
+  } catch (err) {
+    console.error('Export error:', err.message);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to generate ${format.toUpperCase()}.`,
+      data: null,
+    });
+  }
+}
+
+/**
+ * GET /api/resume/:id/export-options
+ * Templates plus any PII the privacy scan flagged, so <ExportModal> can offer
+ * redaction toggles without a second round-trip.
+ */
+async function getExportOptions(req, res) {
+  const resume = await Resume.findOne({ _id: req.params.id, userId: req.userId }).select('_id');
+  if (!resume) {
+    return res.status(404).json({ success: false, message: 'Resume not found', data: null });
+  }
+
+  const flags = await PrivacyFlag.find({ resumeId: req.params.id }).lean();
+
+  return res.json({
+    success: true,
+    message: 'Export options retrieved',
+    data: { templates: listTemplates(), flags },
+  });
+}
+
+module.exports = {
+  uploadResume,
+  getResume,
+  updateSections,
+  patchSkills,
+  // Phase 7
+  getVersions,
+  restoreVersion,
+  compareVersions,
+  exportResume,
+  getExportOptions,
+};

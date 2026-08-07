@@ -5,9 +5,21 @@ const Memory = require('../models/Memory');
 const { redactResume } = require('../services/redactionService');
 const { scanAndFlagResume } = require('../agents/privacyAgent');
 
+/**
+ * Every handler that reads or redacts a resume must scope the lookup to the
+ * authenticated user. Looking a resume up by id alone would let any signed-in
+ * user read another user's PII flags or pull their redacted content.
+ */
+async function findOwnedResume(resumeId, userId) {
+  return Resume.findOne({ _id: resumeId, userId }).lean();
+}
+
 // Get flags for a resume
 exports.getFlags = async (req, res) => {
   try {
+    const resume = await findOwnedResume(req.params.resumeId, req.userId);
+    if (!resume) return res.status(404).json({ message: 'Resume not found' });
+
     const flags = await PrivacyFlag.find({ resumeId: req.params.resumeId });
     res.json(flags);
   } catch (error) {
@@ -19,7 +31,7 @@ exports.getFlags = async (req, res) => {
 exports.redact = async (req, res) => {
   try {
     const { resumeId, fieldPaths } = req.body;
-    const resume = await Resume.findById(resumeId).lean();
+    const resume = await findOwnedResume(resumeId, req.userId);
     if (!resume) return res.status(404).json({ message: 'Resume not found' });
 
     const redacted = redactResume(resume, fieldPaths);
@@ -33,9 +45,9 @@ exports.redact = async (req, res) => {
 exports.scanResume = async (req, res) => {
     try {
         const { resumeId } = req.body;
-        const resume = await Resume.findById(resumeId).lean();
+        const resume = await findOwnedResume(resumeId, req.userId);
         if (!resume) return res.status(404).json({ message: 'Resume not found' });
-    
+
         const flags = await scanAndFlagResume(resumeId, resume);
         res.json({ success: true, flags });
     } catch (error) {

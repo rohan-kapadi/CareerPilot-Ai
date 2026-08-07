@@ -1,12 +1,16 @@
 /**
- * ResumeViewerPage — Phase 1
- * Read-only structured view of a parsed resume with score overlay.
- * Score breakdown and explanation trace UI are added in Phase 4.
+ * ResumeViewerPage — Phase 1, extended in Phase 7
+ * Read-only structured view of a parsed resume with score overlay,
+ * plus version history, side-by-side comparison and export (§6.8–§6.10).
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getResume } from '../services/api';
+import { listVersions, restoreVersion, compareVersions } from '../api/versionApi';
+import VersionTimeline from '../components/resume/VersionTimeline';
+import SplitDiffView from '../components/resume/SplitDiffView';
+import ExportModal from '../components/common/ExportModal';
 
 export default function ResumeViewerPage() {
   const { id } = useParams();
@@ -14,12 +18,58 @@ export default function ResumeViewerPage() {
   const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getResume(id)
-      .then((res) => setResume(res.data?.data ?? null))
-      .catch(() => toast.error('Failed to load resume'))
-      .finally(() => setLoading(false));
+  // ── Phase 7 state ──
+  const [versions, setVersions] = useState([]);
+  const [currentVersion, setCurrentVersion] = useState(null);
+  const [comparison, setComparison] = useState(null);
+  const [restoring, setRestoring] = useState(null);
+  const [showExport, setShowExport] = useState(false);
+
+  const loadResume = useCallback(
+    () =>
+      getResume(id)
+        .then((res) => setResume(res.data?.data ?? null))
+        .catch(() => toast.error('Failed to load resume')),
+    [id]
+  );
+
+  const loadVersions = useCallback(async () => {
+    try {
+      const res = await listVersions(id);
+      setVersions(res.data?.data?.versions ?? []);
+      setCurrentVersion(res.data?.data?.currentVersion ?? null);
+    } catch {
+      // Version history is supplementary — a failure here shouldn't block the page
+      setVersions([]);
+    }
   }, [id]);
+
+  useEffect(() => {
+    Promise.all([loadResume(), loadVersions()]).finally(() => setLoading(false));
+  }, [loadResume, loadVersions]);
+
+  async function handleRestore(versionNumber) {
+    setRestoring(versionNumber);
+    try {
+      const res = await restoreVersion(id, versionNumber);
+      toast.success(res.data?.message ?? 'Version restored');
+      setComparison(null);
+      await Promise.all([loadResume(), loadVersions()]);
+    } catch (err) {
+      toast.error(err.response?.data?.message ?? 'Failed to restore version');
+    } finally {
+      setRestoring(null);
+    }
+  }
+
+  async function handleCompare(v1, v2) {
+    try {
+      const res = await compareVersions(id, v1, v2);
+      setComparison(res.data?.data ?? null);
+    } catch (err) {
+      toast.error(err.response?.data?.message ?? 'Failed to compare versions');
+    }
+  }
 
   if (loading) return <div className="page-loading">Loading resume…</div>;
   if (!resume) return (
@@ -36,7 +86,8 @@ export default function ResumeViewerPage() {
         <Link to="/dashboard" className="back-link">← Dashboard</Link>
         <div className="page-header__actions">
           <button className="btn btn--ghost" onClick={() => navigate(`/editor/${id}`)}>✏️ Edit</button>
-          <button className="btn btn--ghost" onClick={() => navigate(`/download/${id}`)}>⬇️ Export</button>
+          <button className="btn btn--ghost" onClick={() => navigate(`/suggestions?resumeId=${id}`)}>🛠️ Suggestions</button>
+          <button className="btn btn--ghost" onClick={() => setShowExport(true)}>⬇️ Export</button>
           <button className="btn btn--primary" onClick={() => navigate('/jd/new')}>🔍 Analyze JD</button>
         </div>
       </header>
@@ -171,6 +222,44 @@ export default function ResumeViewerPage() {
           )}
         </div>
       </div>
+
+      {/* ── Phase 7: Version history & comparison ── */}
+      <div className="mx-auto mt-12 max-w-4xl space-y-6 px-4 pb-12">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-white">🕐 Version History</h2>
+            <p className="mt-1 text-sm text-gray-400">
+              Every approved change is recorded. Select two versions to compare them.
+            </p>
+          </div>
+          {currentVersion != null && (
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-gray-300">
+              Current: v{currentVersion}
+            </span>
+          )}
+        </div>
+
+        {comparison && (
+          <SplitDiffView comparison={comparison} onClose={() => setComparison(null)} />
+        )}
+
+        <VersionTimeline
+          versions={versions}
+          currentVersion={currentVersion}
+          onRestore={handleRestore}
+          onCompare={handleCompare}
+          restoring={restoring}
+        />
+      </div>
+
+      {/* ── Phase 7: Export ── */}
+      {showExport && (
+        <ExportModal
+          resumeId={id}
+          resumeName={personalInfo?.name || originalFileName || 'Resume'}
+          onClose={() => setShowExport(false)}
+        />
+      )}
     </div>
   );
 }

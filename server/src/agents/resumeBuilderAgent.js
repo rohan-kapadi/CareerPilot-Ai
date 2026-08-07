@@ -12,10 +12,11 @@
  *
  * Section order: summary → experience → education → skills → projects
  *
- * Phase 6 Context Handoff:
- *   Currently "accept" writes directly to Resume.sections. Phase 6 will route this
- *   through a Suggestion model for Human Approval Workflow. Do NOT build competing
- *   approval mechanisms in Phase 3/4/5.
+ * Phase 6 (done): "accept" no longer writes to Resume.sections directly. The UI
+ *   posts the draft to POST /api/suggestions/from-draft, which records it as a
+ *   Suggestion and applies only the drafted section. Do not reintroduce a direct
+ *   PUT /api/resume/:id/sections call here — that path replaced the whole
+ *   sections object and discarded every section the user wasn't editing.
  */
 const { callMistralJSON } = require('../services/llmService');
 

@@ -643,3 +643,161 @@ html[data-theme='light'] {
     border-color: rgba(148, 163, 184, 0.45) !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Explainability (Phase 4) — ReasoningTrace / ConfidenceBadge
+   These components shipped in Phase 4 referencing class names that
+   were never defined, so they rendered unstyled. Defined here.
+   ────────────────────────────────────────────────────────────── */
+@layer components {
+  .reasoning-trace {
+    @apply rounded-2xl border border-white/10 bg-white/[0.03] p-4;
+  }
+
+  .reasoning-trace--empty {
+    @apply text-sm text-gray-400;
+  }
+
+  .reasoning-trace__header {
+    @apply flex cursor-pointer flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .reasoning-trace__summary {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .reasoning-trace__icon {
+    @apply text-base;
+  }
+
+  .reasoning-trace__title {
+    @apply font-semibold text-white;
+  }
+
+  .reasoning-trace__toggle {
+    @apply shrink-0 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:bg-white/10 hover:text-white;
+  }
+
+  .reasoning-trace__details {
+    @apply mt-4 space-y-5 border-t border-white/10 pt-4;
+  }
+
+  .reasoning-trace__sub-title {
+    @apply mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400;
+  }
+
+  .reasoning-factors-list {
+    @apply space-y-3;
+  }
+
+  .reasoning-factor-card {
+    @apply rounded-xl border border-white/5 bg-black/20 p-3;
+  }
+
+  .factor-header {
+    @apply flex flex-wrap items-center gap-x-3 gap-y-1 text-sm;
+  }
+
+  .factor-name {
+    @apply flex-1 font-medium text-white;
+  }
+
+  .factor-weight,
+  .factor-score {
+    @apply text-xs font-medium text-gray-400;
+  }
+
+  .factor-bar-track {
+    @apply mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10;
+  }
+
+  .factor-bar-fill {
+    @apply h-full rounded-full transition-all;
+  }
+
+  .factor-evidence {
+    @apply mt-2 text-xs leading-relaxed text-gray-400;
+  }
+
+  .evidence-label {
+    @apply font-semibold text-gray-300;
+  }
+
+  .alternatives-list {
+    @apply space-y-1.5;
+  }
+
+  .alternative-item {
+    @apply text-sm text-blue-300;
+  }
+
+  .reasoning-trace__sources {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .sources-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-gray-500;
+  }
+
+  .sources-chips {
+    @apply flex flex-wrap gap-1.5;
+  }
+
+  .confidence-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium;
+  }
+
+  .confidence-badge__dot {
+    @apply h-1.5 w-1.5 rounded-full;
+  }
+
+  .critic-flag-chip {
+    @apply rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400;
+  }
+
+  html[data-theme='light'] .reasoning-trace {
+    @apply border-slate-200 bg-white/70;
+  }
+
+  html[data-theme='light'] .reasoning-trace__title,
+  html[data-theme='light'] .factor-name {
+    @apply text-slate-900;
+  }
+
+  html[data-theme='light'] .reasoning-factor-card {
+    @apply border-slate-200 bg-slate-50;
+  }
+
+  html[data-theme='light'] .reasoning-trace__toggle {
+    @apply border-slate-300 bg-white text-slate-700 hover:bg-slate-100;
+  }
+
+  html[data-theme='light'] .alternative-item {
+    @apply text-blue-700;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Suggestions & Roadmap (Phase 6)
+   ────────────────────────────────────────────────────────────── */
+@layer components {
+  .diff-block {
+    @apply whitespace-pre-wrap break-words rounded-xl border p-3 text-sm leading-relaxed;
+  }
+
+  .diff-block--before {
+    @apply border-red-500/20 bg-red-500/5 text-red-200/90 line-through decoration-red-400/40;
+  }
+
+  .diff-block--after {
+    @apply border-emerald-500/20 bg-emerald-500/5 text-emerald-100;
+  }
+
+  html[data-theme='light'] .diff-block--before {
+    @apply border-red-200 bg-red-50 text-red-700;
+  }
+
+  html[data-theme='light'] .diff-block--after {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-800;
+  }
+}

@@ -1,14 +1,14 @@
 /**
- * DashboardPage — Phase 1
- * Home base after login. Shows user's resumes + quick-action buttons.
- * Memory Dashboard summary widget, JD list, and match history are added in later phases.
+ * DashboardPage — Phase 1, finalized in Phase 8
+ * Home base after login: surfaces a widget from every phase — memory summary
+ * (Phase 3), pending suggestions (Phase 6), recent matches (Phase 1/4).
  */
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getResume } from '../services/api';
 import { listJDs } from '../api/jdApi';
 import { listMatches } from '../api/matchApi';
+import { listSuggestions } from '../api/suggestionApi';
 import MemoryDashboardWidget from '../components/memory/MemoryDashboardWidget';
 
 export default function DashboardPage() {
@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [resumes, setResumes]   = useState([]);
   const [jds, setJDs]           = useState([]);
   const [matches, setMatches]   = useState([]);
+  const [pendingSuggestions, setPendingSuggestions] = useState([]);
   const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
@@ -32,12 +33,16 @@ export default function DashboardPage() {
         const stored = JSON.parse(localStorage.getItem('resumes') || '[]');
         setResumes(stored);
 
-        const [jdRes, matchRes] = await Promise.allSettled([
+        const [jdRes, matchRes, suggestionRes] = await Promise.allSettled([
           listJDs(),
           listMatches(),
+          listSuggestions({ status: 'pending' }),
         ]);
         if (jdRes.status === 'fulfilled') setJDs(jdRes.value.data?.data?.jds ?? []);
         if (matchRes.status === 'fulfilled') setMatches(matchRes.value.data?.data?.matches ?? []);
+        if (suggestionRes.status === 'fulfilled') {
+          setPendingSuggestions(suggestionRes.value.data?.data?.suggestions ?? []);
+        }
       } catch (err) {
         console.error('Dashboard load error:', err);
       } finally {
@@ -67,7 +72,17 @@ export default function DashboardPage() {
           <Link to="/jd/new" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Analyze JD</Link>
           <Link to="/chat" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Career Chat</Link>
           <Link to="/memory" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Memory</Link>
+          <Link to="/suggestions" className="relative px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">
+            Suggestions
+            {pendingSuggestions.length > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold border border-amber-500/30">
+                {pendingSuggestions.length}
+              </span>
+            )}
+          </Link>
+          <Link to="/privacy" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Privacy</Link>
           <Link to="/profile" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Profile</Link>
+          <Link to="/settings" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Settings</Link>
           <button onClick={handleLogout} className="px-4 py-2 rounded-lg text-red-400 hover:text-white hover:bg-red-500/20 transition-colors font-medium text-sm border border-red-500/30">Logout</button>
         </nav>
       </header>
@@ -114,6 +129,38 @@ export default function DashboardPage() {
         <section className="space-y-6">
           <MemoryDashboardWidget />
         </section>
+
+        {/* ── Pending Approvals (Phase 6) ── */}
+        {pendingSuggestions.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white/90">Waiting for your approval</h2>
+              <Link to="/suggestions" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">Review all &rarr;</Link>
+            </div>
+            <div className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl space-y-4">
+              <p className="text-sm text-amber-200/90">
+                The AI has {pendingSuggestions.length} proposal{pendingSuggestions.length !== 1 ? 's' : ''} for you.
+                Nothing is applied to your resume until you approve it.
+              </p>
+              <ul className="space-y-2">
+                {pendingSuggestions.slice(0, 3).map((s) => (
+                  <li key={s._id}>
+                    <Link to="/suggestions" className="flex items-center gap-3 p-3 bg-black/20 border border-white/5 rounded-xl hover:bg-black/30 transition-colors">
+                      <span className="text-lg shrink-0">
+                        {s.suggestionType === 'roadmap' ? '🗺️' : s.suggestionType === 'skill_add' ? '⚡' : '✏️'}
+                      </span>
+                      <span className="flex-1 min-w-0 text-sm text-white truncate">{s.title}</span>
+                      <span className="shrink-0 text-xs text-gray-500">Review &rarr;</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {pendingSuggestions.length > 3 && (
+                <p className="text-xs text-gray-400">+{pendingSuggestions.length - 3} more in the review queue</p>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* ── Recent Resumes ── */}
         <section className="space-y-4">
