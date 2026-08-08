@@ -368,7 +368,7 @@ async function generateTailoredResume() {
     try {
       setStatus('Generating PDF...', 'warning');
       const { jwt } = await chrome.storage.local.get(['jwt']);
-      const exportRes = await fetch('http://localhost:5000/api/job/tailor/export/pdf', {
+      const exportRes = await fetch('https://careerpilot-ai-server-lgiq.onrender.com/api/job/tailor/export/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
         body: JSON.stringify({ sections: response }),

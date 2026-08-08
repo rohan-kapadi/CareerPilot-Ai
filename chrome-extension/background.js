@@ -3,7 +3,7 @@
  * Handles messages from content script and popup, makes API calls.
  */
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://careerpilot-ai-server-lgiq.onrender.com/api';
 
 // Listen for messages from content script / popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
