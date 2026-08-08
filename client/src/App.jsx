@@ -17,6 +17,7 @@ import AISuggestionsPage from './pages/AISuggestionsPage';
 import RoadmapPage from './pages/RoadmapPage';
 import SettingsPage from './pages/SettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import LandingPage from './pages/LandingPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import GlobalLayout from './components/layout/GlobalLayout';
 import { MemoryProvider } from './context/MemoryContext';
@@ -53,10 +54,11 @@ function App() {
           }}
         />
         <Routes>
-          {/* Root sends signed-in users to their dashboard, everyone else to sign in */}
+          {/* Root shows the marketing page to visitors; signed-in users skip
+              straight to their dashboard rather than re-reading the pitch. */}
           <Route
             path="/"
-            element={<Navigate to={getAuthToken() ? '/dashboard' : '/login'} replace />}
+            element={getAuthToken() ? <Navigate to="/dashboard" replace /> : <LandingPage />}
           />
 
           {/* Public */}

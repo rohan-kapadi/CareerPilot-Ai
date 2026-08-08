@@ -7,7 +7,9 @@ import toast from 'react-hot-toast';
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isRegister, setIsRegister] = useState(false);
+  // Landing-page "Get started" CTAs pass register:true so the sign-up form is
+  // already open on arrival, instead of dropping visitors on a sign-in form.
+  const [isRegister, setIsRegister] = useState(() => Boolean(location.state?.register));
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
