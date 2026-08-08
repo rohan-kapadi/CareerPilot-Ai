@@ -4,11 +4,19 @@ Computes cosine similarity to match resume skills against job skills.
 """
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Load model once at module level for performance
-model = SentenceTransformer("all-MiniLM-L6-v2")
+_model = None
+def get_embedding_model():
+    """
+    Lazy load SentenceTransformer model on first inference.
+    Prevents blocking uvicorn startup and port binding on cloud deployments.
+    """
+    global _model
+    if _model is None:
+        from sentence_transformers import SentenceTransformer
+        _model = SentenceTransformer("all-MiniLM-L6-v2")
+    return _model
 
 SIMILARITY_THRESHOLD = 0.75
 
@@ -25,6 +33,8 @@ async def match_skills(
 
     if not resume_skills:
         return {"matched": [], "missing": job_skills, "ats_score": 0.0}
+    
+    model = get_embedding_model()
 
     # Encode skills
     resume_embeddings = model.encode(resume_skills, convert_to_numpy=True)
