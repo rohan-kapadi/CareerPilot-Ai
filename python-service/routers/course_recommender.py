@@ -110,9 +110,9 @@ async def recommend_courses(request: CourseRequest):
         recommendations = []
         for idx in top_indices:
             row = df.iloc[idx]
-            course_url = str(row.get("course_url", ""))
-            if not course_url.startswith("http"):
-                course_url = "https://www.udemy.com" + course_url
+            course_title = str(row["title"])
+            import urllib.parse
+            course_url = "https://www.udemy.com/courses/search/?q=" + urllib.parse.quote_plus(course_title)
             recommendations.append(
                 CourseRecommendation(
                     title=str(row["title"]),

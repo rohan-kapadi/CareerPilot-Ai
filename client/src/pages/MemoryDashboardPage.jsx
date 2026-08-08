@@ -227,7 +227,7 @@ export default function MemoryDashboardPage() {
         {/* Main view area */}
         <div className="panel-card" style={{ minHeight: '400px', padding: '1.5rem' }}>
           {activeView === 'Timeline' ? (
-            <MemoryTimeline memories={filteredMemories} onDecide={handleDecide} />
+            <MemoryTimeline memories={filteredMemories} onDecide={handleDecide} onForget={handleForgetPreview} />
           ) : (
             <MemoryGraph memories={filteredMemories} />
           )}

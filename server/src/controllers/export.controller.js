@@ -94,14 +94,11 @@ async function exportEmail(req, res) {
   let pdfPath = resume.exportedPdfPath;
 
   try {
-    if (!docxPath) {
-      docxPath = await generateDocx(resume._id.toString(), resume.sections);
-      resume.exportedDocxPath = docxPath;
-    }
-    if (!pdfPath) {
-      pdfPath = await generatePdf(resume._id.toString(), resume.sections);
-      resume.exportedPdfPath = pdfPath;
-    }
+    docxPath = await generateDocx(resume._id.toString(), resume.sections);
+    resume.exportedDocxPath = docxPath;
+
+    pdfPath = await generatePdf(resume._id.toString(), resume.sections);
+    resume.exportedPdfPath = pdfPath;
     await resume.save();
   } catch (err) {
     console.error('Export generation error:', err.message);

@@ -98,9 +98,9 @@ export default function LandingPage() {
       {/* ── Public header ── */}
       <header className="lp-nav">
         <div className="page-wrap flex h-16 items-center gap-3">
-          <a href="#top" className="lp-brand" aria-label="CareerPilot AI home">
-            <span className="brand-mark h-9 w-9 rounded-xl text-white text-base">✦</span>
-            <span className="lp-brand__name">CareerPilot AI</span>
+          <a href="#top" className="lp-brand" aria-label="CareerPilot AI home" style={{ display: 'flex', alignItems: 'center' }}>
+            <img src="/logo.svg" alt="CareerPilot Logo" className="h-9 w-9 rounded-xl object-contain" />
+            <span className="lp-brand__name" style={{ marginLeft: '6px' }}>CareerPilot AI</span>
           </a>
 
           <nav className="lp-nav__links" aria-label="Sections">
@@ -304,7 +304,7 @@ export default function LandingPage() {
       <footer className="lp-footer">
         <div className="page-wrap lp-footer__inner">
           <span className="lp-footer__brand">
-            <span className="brand-mark h-7 w-7 rounded-lg text-white text-xs">✦</span>
+            <img src="/logo.svg" alt="CareerPilot Logo" className="h-7 w-7 rounded-lg object-contain" />
             CareerPilot AI
           </span>
           <span className="lp-footer__note">© 2026 CareerPilot AI — Premium Intelligence Suite</span>

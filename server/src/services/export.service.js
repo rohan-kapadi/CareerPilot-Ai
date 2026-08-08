@@ -160,7 +160,6 @@ async function generatePdf(resumeId, sections, { template = 'modern', suffix = '
       format: 'A4',
       margin: { top: '0.5in', right: '0.5in', bottom: '0.5in', left: '0.5in' },
       printBackground: true,
-      pageRanges: '1',
     });
 
     return outputPath;

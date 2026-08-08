@@ -17,6 +17,7 @@
  */
 const Suggestion = require('../models/Suggestion');
 const Resume = require('../models/Resume.model');
+const Memory = require('../models/Memory');
 const recommendationAgent = require('../agents/recommendationAgent');
 const versionService = require('../services/versionService');
 const {
@@ -199,6 +200,19 @@ async function approveSuggestion(req, res) {
     suggestion.status = 'accepted';
     suggestion.decidedAt = new Date();
     await suggestion.save();
+
+    await Memory.create({
+      userId: req.userId,
+      type: 'long_term',
+      category: 'goals',
+      content: `User is actively learning ${suggestion.roadmap?.skill || 'a new skill'} via a learning roadmap.`,
+      rationale: 'Created automatically when the user started a new learning roadmap.',
+      confidence: 1.0,
+      status: 'accepted',
+      sourceRef: {
+        resumeId: suggestion.resumeId || null,
+      }
+    });
 
     return res.json({
       success: true,

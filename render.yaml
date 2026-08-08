@@ -1,0 +1,42 @@
+services:
+  # ── Node.js API Server ──────────────────────────────────────────────────────
+  - type: web
+    name: careerpilot-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node src/app.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false          # Set manually in Render dashboard
+      - key: JWT_SECRET
+        sync: false          # Set manually in Render dashboard
+      - key: MISTRAL_API_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: PYTHON_SERVICE_URL
+        fromService:
+          name: careerpilot-python
+          type: web
+          property: host
+      - key: CLIENT_URL
+        value: https://your-app.vercel.app  # Update after Vercel deploy
+
+  # ── Python FastAPI AI Service ──────────────────────────────────────────────
+  - type: web
+    name: careerpilot-python
+    runtime: python
+    rootDir: python-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MISTRAL_API_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: NODE_SERVER_URL
+        fromService:
+          name: careerpilot-server
+          type: web
+          property: host

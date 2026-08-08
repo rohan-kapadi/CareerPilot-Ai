@@ -19,18 +19,6 @@ const MODE_META = {
     color: '#7c3aed',
     hint: 'Ask about interviews, salary, job search strategy, offers, or career pivots.',
   },
-  builder: {
-    label: 'Resume Builder',
-    icon: '🛠',
-    color: '#10b981',
-    hint: 'Refine summaries, experience bullets, skills, projects, and resume structure.',
-  },
-  analyzer: {
-    label: 'Job Analyzer',
-    icon: '📊',
-    color: '#f59e0b',
-    hint: 'Paste a job description and get a sharper fit analysis against your profile.',
-  },
 };
 
 export default function CareerAssistantPage() {
@@ -67,9 +55,10 @@ export default function CareerAssistantPage() {
   })();
 
   useEffect(() => {
-    listConversations()
-      .then((r) => setConversations(r.data?.data?.conversations ?? []))
-      .catch(() => {});
+    listConversations().then((res) => {
+      const allConvs = res.data?.data?.conversations ?? [];
+      setConversations(allConvs.filter(c => c.mode === 'coach'));
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -194,21 +183,7 @@ export default function CareerAssistantPage() {
           <button className="btn btn--primary btn--sm" onClick={startNewConversation}>+ New Chat</button>
         </div>
 
-        {!activeConvId && (
-          <div className="mode-selector">
-            <p className="mode-selector__label">Start as</p>
-            {Object.entries(MODE_META).map(([key, meta]) => (
-              <button
-                key={key}
-                className={`mode-btn ${mode === key ? 'mode-btn--active' : ''}`}
-                onClick={() => setMode(key)}
-              >
-                <span className="mode-btn__icon">{meta.icon}</span>
-                <span className="mode-btn__label">{meta.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Start as mode selector removed */}
 
         <div className="conv-list">
           {conversations.map((c) => (

@@ -185,7 +185,7 @@ function buildRationale(category, content) {
  */
 async function extractFacts(message, recentHistory = '') {
   const systemPrompt = `You are a fact extractor for a career AI assistant.
-Extract factual claims about the user's career from their message — skills, experience, goals, preferences.
+Extract factual claims about the user's career from their message — skills, experience, goals, preferences, location, and constraints.
 Do NOT extract questions, greetings, or generic statements.
 Return JSON: { "facts": ["fact1", "fact2"] } (max 3 facts, empty array if none found)`;
 

@@ -23,7 +23,7 @@ const TYPE_COLORS = {
   hidden:    '#8b5cf6',
 };
 
-export default function MemoryTimeline({ memories = [], onDecide }) {
+export default function MemoryTimeline({ memories = [], onDecide, onForget }) {
   if (memories.length === 0) {
     return (
       <div className="timeline-empty">
@@ -49,7 +49,7 @@ export default function MemoryTimeline({ memories = [], onDecide }) {
         <div key={date} className="timeline-group">
           <div className="timeline-date">{date}</div>
           {items.map(m => (
-            <TimelineEntry key={m._id} memory={m} onDecide={onDecide} />
+            <TimelineEntry key={m._id} memory={m} onDecide={onDecide} onForget={onForget} />
           ))}
         </div>
       ))}
@@ -57,7 +57,7 @@ export default function MemoryTimeline({ memories = [], onDecide }) {
   );
 }
 
-function TimelineEntry({ memory, onDecide }) {
+function TimelineEntry({ memory, onDecide, onForget }) {
   const meta = STATUS_META[memory.status] || STATUS_META.proposed;
   const typeColor = TYPE_COLORS[memory.type] || '#6366f1';
   const time = new Date(memory.updatedAt || memory.createdAt).toLocaleTimeString('en-IN', {
@@ -97,22 +97,33 @@ function TimelineEntry({ memory, onDecide }) {
           ) : memory.content}
         </p>
 
-        {/* Confidence */}
-        <span className="timeline-conf">
-          Confidence: {Math.round((memory.confidence || 0) * 100)}%
-        </span>
+        {/* Footer Row (Confidence, Source, Actions) */}
+        <div className="timeline-footer-row">
+          <span className="timeline-conf">
+            Confidence: {Math.round((memory.confidence || 0) * 100)}%
+          </span>
 
-        {/* Source link */}
-        {memory.sourceRef?.conversationId && (
-          <Link
-            to={`/chat/${memory.sourceRef.conversationId}`}
-            className="timeline-source-link"
-          >
-            View source conversation →
-          </Link>
-        )}
+          {memory.sourceRef?.conversationId && (
+            <Link
+              to={`/chat/${memory.sourceRef.conversationId}`}
+              className="timeline-source-link"
+            >
+              View source →
+            </Link>
+          )}
 
-        {/* Expiring soon actions */}
+          {(memory.status === 'accepted' || memory.status === 'modified') && onForget && (
+            <button
+              className="btn btn--xs btn--ghost"
+              style={{ color: '#ef4444', borderColor: 'transparent', padding: '0.15rem 0.5rem', marginLeft: 'auto' }}
+              onClick={() => onForget(memory)}
+            >
+              🗑 Delete
+            </button>
+          )}
+        </div>
+
+        {/* Expiring soon actions (keep separate if visible) */}
         {isExpiringSoon && memory.status === 'accepted' && (
           <div className="timeline-expiry-actions">
             <span className="expiry-warning">

@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design tokens ── */
+/* â”€â”€ Design tokens â”€â”€ */
 :root {
   color-scheme: light;
   --sand-50:  #faf8f5;
@@ -46,7 +46,7 @@
   --accent-red:    #ef4444;
 }
 
-/* ── Base ── */
+/* â”€â”€ Base â”€â”€ */
 @layer base {
   * { @apply border-stone-200; }
 
@@ -92,7 +92,7 @@
   .hide-scrollbar::-webkit-scrollbar { display: none; }
 }
 
-/* ── Component layer ── */
+/* â”€â”€ Component layer â”€â”€ */
 @layer components {
 
   /* Shell */
@@ -105,7 +105,7 @@
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
 
-  /* ── Cards ── */
+  /* â”€â”€ Cards â”€â”€ */
   .panel-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -133,7 +133,7 @@
     @apply rounded-[1.5rem];
   }
 
-  /* ── Brand mark ── */
+  /* â”€â”€ Brand mark â”€â”€ */
   .brand-mark {
     @apply flex items-center justify-center rounded-2xl;
     background: linear-gradient(135deg, #f59e0b, #3b82f6);
@@ -141,13 +141,13 @@
     box-shadow: 0 4px 14px rgba(59,130,246,0.25);
   }
 
-  /* ── Gradient text ── */
+  /* â”€â”€ Gradient text â”€â”€ */
   .gradient-text {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, #f59e0b, #3b82f6);
   }
 
-  /* ── Section label ── */
+  /* â”€â”€ Section label â”€â”€ */
   .section-kicker {
     @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em];
     border: 1px solid rgba(59,130,246,0.3);
@@ -155,14 +155,14 @@
     color: #1d4ed8;
   }
 
-  /* ── Dividers ── */
+  /* â”€â”€ Dividers â”€â”€ */
   .soft-divider { border-color: rgba(0,0,0,0.08); }
   .ambient-divider {
     @apply h-px w-full;
     background: linear-gradient(to right, transparent, rgba(0,0,0,0.1), transparent);
   }
 
-  /* ── Pills ── */
+  /* â”€â”€ Pills â”€â”€ */
   .pill {
     @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium;
     border: 1px solid rgba(0,0,0,0.1);
@@ -170,7 +170,7 @@
     color: var(--text-secondary);
   }
 
-  /* ── Buttons ── */
+  /* â”€â”€ Buttons â”€â”€ */
   .btn-primary {
     @apply rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200;
     @apply hover:-translate-y-0.5 active:translate-y-0;
@@ -204,7 +204,7 @@
     color: var(--text-primary);
   }
 
-  /* ── Inputs ── */
+  /* â”€â”€ Inputs â”€â”€ */
   .input-field {
     @apply rounded-full px-4 py-2.5 text-sm transition-all duration-200 outline-none;
     background: var(--input-bg);
@@ -219,7 +219,7 @@
     box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
   }
 
-  /* ── Textarea variant ── */
+  /* â”€â”€ Textarea variant â”€â”€ */
   .input-field-area {
     @apply rounded-2xl px-4 py-3 text-sm transition-all duration-200 outline-none w-full resize-none;
     background: var(--input-bg);
@@ -234,7 +234,7 @@
     box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
   }
 
-  /* ── Navbar ── */
+  /* â”€â”€ Navbar â”€â”€ */
   .app-navbar {
     position: sticky;
     top: 0;
@@ -245,7 +245,7 @@
     -webkit-backdrop-filter: blur(20px);
   }
 
-  /* ── Btn system ── */
+  /* â”€â”€ Btn system â”€â”€ */
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
@@ -276,7 +276,7 @@
   .btn--sm  { @apply px-3 py-2 text-xs; }
   .btn--xs  { @apply rounded-2xl px-2.5 py-1.5 text-[11px]; }
 
-  /* ── Back link ── */
+  /* â”€â”€ Back link â”€â”€ */
   .back-link {
     @apply text-sm font-medium transition-colors;
     color: var(--text-muted);
@@ -284,15 +284,15 @@
   .back-link:hover { color: var(--text-primary); }
   .back-link--sm { @apply text-xs uppercase tracking-[0.2em]; }
 
-  /* ── Page loading ── */
+  /* â”€â”€ Page loading â”€â”€ */
   .page-loading {
     @apply flex flex-1 items-center justify-center text-sm;
     color: var(--text-muted);
   }
 
-  /* ══════════════════════════════════════════
+  /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      CHAT PAGE STYLES
-  ══════════════════════════════════════════ */
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
   .chat-page {
     @apply relative flex min-h-screen overflow-hidden;
     color: var(--text-primary);
@@ -451,7 +451,7 @@
     background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(251,191,36,0.1));
     border-color: rgba(245,158,11,0.25);
   }
-  .chat-bubble__text { @apply whitespace-pre-wrap text-sm leading-7; color: var(--text-primary); }
+  .chat-bubble__text { @apply whitespace-normal text-sm leading-7; color: var(--text-primary); }
   .chat-bubble__time { @apply mt-3 block text-[11px] uppercase tracking-[0.16em]; color: var(--text-faint); }
 
   .agent-badge {
@@ -511,9 +511,13 @@
   .draft-card__actions { @apply mt-4 flex flex-wrap gap-3; }
 
   .proposed-memory-cards-container {
-    @apply pointer-events-none absolute right-4 top-24 z-20 flex w-[min(360px,calc(100vw-2rem))] flex-col gap-3;
+    @apply absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 p-4 backdrop-blur-md;
+    background-color: rgba(0, 0, 0, 0.4);
   }
-  .proposed-memory-cards-container > * { pointer-events: auto; }
+  .proposed-memory-cards-container > * { 
+    @apply w-full max-w-md shadow-2xl transition-all duration-300 scale-100;
+    pointer-events: auto;
+  }
 
   .chat-greeting {
     @apply pointer-events-none absolute inset-x-0 top-1/2 z-10 mx-auto flex max-w-2xl -translate-y-1/2 flex-col items-center px-6 text-center;
@@ -553,7 +557,7 @@
   }
   .chat-send-btn:hover { background: #111827; }
 
-  /* ── Responsive chat ── */
+  /* â”€â”€ Responsive chat â”€â”€ */
   @media (max-width: 1024px) {
     .chat-page { @apply flex-col; }
     .chat-sidebar { @apply max-w-none border-b border-r-0; }
@@ -570,9 +574,9 @@
   }
 }
 
-/* ── Utility overrides ── */
+/* â”€â”€ Utility overrides â”€â”€ */
 @layer utilities {
-  /* White text on white bg → invert */
+  /* White text on white bg â†’ invert */
   .text-white { color: #111827 !important; }
   .text-gray-400 { color: #6b7280 !important; }
   .text-gray-300 { color: #374151 !important; }
@@ -589,9 +593,9 @@
   .border-white\/20 { border-color: rgba(0,0,0,0.12) !important; }
 }
 
-/* ══════════════════════════════════════════
-   Explainability — Phase 4
-══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Explainability â€” Phase 4
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .reasoning-trace {
     @apply rounded-2xl p-4;
@@ -645,9 +649,9 @@
   }
 }
 
-/* ══════════════════════════════════════════
-   Suggestions & Roadmap — Phase 6
-══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Suggestions & Roadmap â€” Phase 6
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .diff-block {
     @apply whitespace-pre-wrap break-words rounded-xl border p-3 text-sm leading-relaxed;
@@ -666,9 +670,9 @@
   }
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Entrance animations
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer utilities {
   .animate-slide-up {
     animation: slide-up-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -686,9 +690,9 @@
   }
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Explainability Page Layout
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .explain-page {
     @apply flex min-h-screen flex-col;
@@ -826,9 +830,9 @@
   }
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Resume Builder Page Layout (Phase 2)
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .builder-page {
     @apply flex h-screen w-full overflow-hidden;
@@ -913,7 +917,7 @@
     backdrop-filter: blur(16px);
   }
 
-  /* ── Inline section-suggestion editor ── */
+  /* â”€â”€ Inline section-suggestion editor â”€â”€ */
   .section-editor { @apply space-y-4; }
   .section-editor__header {
     @apply flex flex-wrap items-center justify-between gap-3 pb-3;
@@ -936,9 +940,9 @@
   .section-editor__actions { @apply flex flex-wrap gap-3 pt-1; }
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Resume Viewer Page Layout (Phase 7)
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .resume-viewer {
     @apply mx-auto w-full max-w-4xl px-4 py-8 sm:px-6;
@@ -954,7 +958,7 @@
     color: var(--text-muted);
   }
 
-  /* ── Score overlay ── */
+  /* â”€â”€ Score overlay â”€â”€ */
   .score-overlay {
     @apply mb-6 flex flex-wrap items-center gap-4 rounded-[1.5rem] p-5;
     background: var(--card-bg);
@@ -973,7 +977,7 @@
   .score-detail--red { color: #dc2626; }
   .why-btn { @apply ml-auto; }
 
-  /* ── Resume document ── */
+  /* â”€â”€ Resume document â”€â”€ */
   .resume-content { @apply mb-2; }
   .resume-doc {
     @apply space-y-7 rounded-[1.75rem] p-6 sm:p-9;
@@ -1020,9 +1024,9 @@
   .resume-certs { @apply list-disc space-y-1 pl-5 text-sm; color: var(--text-secondary); }
 }
 
-/* ══════════════════════════════════════════
-   Memory Card — negotiation UI (Phase 3)
-══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Memory Card â€” negotiation UI (Phase 3)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .memory-card {
     @apply w-full space-y-4 rounded-[1.5rem] p-5;
@@ -1119,9 +1123,9 @@
   }
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Memory Dashboard Widget (Phase 3)
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .memory-widget {
     @apply space-y-4 rounded-[1.5rem] p-5;
@@ -1173,9 +1177,9 @@
   .memory-widget__empty { @apply py-2 text-center text-sm; color: var(--text-muted); }
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Memory Timeline (Phase 3)
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .timeline-empty {
     @apply flex flex-col items-center justify-center gap-3 rounded-[1.5rem] p-12 text-center text-sm;
@@ -1185,48 +1189,62 @@
   }
   .timeline-empty__icon { @apply text-4xl opacity-50; }
 
-  .memory-timeline { @apply space-y-6; }
-  .timeline-group { @apply space-y-3; }
+  .memory-timeline { @apply space-y-5; }
+  .timeline-group { 
+    @apply space-y-0 overflow-hidden;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid var(--card-border);
+  }
   .timeline-date {
-    @apply text-xs font-semibold uppercase tracking-wider;
+    @apply text-[0.65rem] font-bold uppercase tracking-widest px-4 py-2 bg-gray-50/80;
     color: var(--text-faint);
+    border-bottom: 1px solid var(--card-border);
   }
 
   .timeline-entry {
-    @apply flex gap-3 rounded-2xl p-4;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
+    @apply flex gap-3 px-4 py-3;
+    border-bottom: 1px solid var(--card-border);
   }
-  .timeline-entry--expiring { border-color: rgba(245,158,11,0.3); }
+  .timeline-entry:last-child {
+    border-bottom: none;
+  }
+  .timeline-entry--expiring { background: rgba(245,158,11,0.03); }
+  
   .timeline-entry__dot {
-    @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm;
+    @apply flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs;
     background: rgba(0,0,0,0.04);
+    margin-top: 2px;
   }
-  .timeline-entry__body { @apply min-w-0 flex-1 space-y-1.5; }
+  .timeline-entry__body { @apply min-w-0 flex-1 space-y-1; }
   .timeline-entry__header { @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium; }
   .timeline-cat { color: var(--text-faint); text-transform: capitalize; }
-  .timeline-time { @apply ml-auto; color: var(--text-faint); }
+  .timeline-time { @apply ml-auto text-[0.65rem]; color: var(--text-faint); }
 
-  .timeline-content { @apply text-sm leading-6; color: var(--text-secondary); }
+  .timeline-content { @apply text-sm leading-5; color: var(--text-primary); }
   .timeline-original { text-decoration: line-through; color: var(--text-faint); }
   .timeline-modified { color: var(--text-primary); font-weight: 500; }
 
-  .timeline-conf { @apply block text-xs; color: var(--text-faint); }
+  .timeline-footer-row {
+    @apply flex flex-wrap items-center gap-3 pt-1;
+  }
+
+  .timeline-conf { @apply text-[0.65rem]; color: var(--text-faint); }
 
   .timeline-source-link {
-    @apply inline-block text-xs font-semibold;
+    @apply inline-block text-[0.65rem] font-semibold;
     color: #1d4ed8;
     text-decoration: none;
   }
   .timeline-source-link:hover { text-decoration: underline; }
 
-  .timeline-expiry-actions { @apply flex flex-wrap items-center gap-2 pt-1; }
+  .timeline-expiry-actions { @apply flex flex-wrap items-center gap-2; }
   .expiry-warning { @apply text-xs font-medium; color: #b45309; }
 }
 
-/* ══════════════════════════════════════════
-   Memory Graph — D3 force layout (Phase 3)
-══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Memory Graph â€” D3 force layout (Phase 3)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .memory-graph-wrapper { @apply relative; }
   .memory-graph-svg {
@@ -1267,9 +1285,9 @@
   .graph-detail-rationale { @apply text-xs leading-relaxed; color: var(--text-faint); }
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Source Highlighter (Phase 4)
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @layer components {
   .source-highlighter { @apply space-y-3 rounded-2xl p-4; background: rgba(0,0,0,0.03); }
   .source-highlighter--empty { @apply text-sm; color: var(--text-muted); }
@@ -1302,4 +1320,15 @@
     border-radius: 0.25rem;
     padding: 0.05rem 0.2rem;
   }
+
+  .chat-bubble__text p { @apply mb-4 last:mb-0; }
+  .chat-bubble__text ul { @apply list-disc pl-5 mb-4; }
+  .chat-bubble__text ol { @apply list-decimal pl-5 mb-4; }
+  .chat-bubble__text li { margin-bottom: 0.5rem !important; }
+  .chat-bubble__text li p { margin: 0 !important; padding: 0 !important; }
+  .chat-bubble__text li ul, .chat-bubble__text li ol { margin: 0.25rem 0 0 0 !important; }
+  .chat-bubble__text h1, .chat-bubble__text h2, .chat-bubble__text h3, .chat-bubble__text h4 { @apply font-bold mt-6 mb-3 text-gray-900; }
+  .chat-bubble__text h3 { @apply text-base; }
+  .chat-bubble__text a { @apply text-blue-600 underline hover:text-blue-800; }
+  .chat-bubble__text strong { @apply font-semibold text-gray-900; }
 }

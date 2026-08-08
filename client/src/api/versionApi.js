@@ -33,6 +33,9 @@ export const exportResume = (resumeId, { format = 'pdf', template = 'modern', re
     { responseType: 'blob' }
   );
 
+/** POST /api/export/:id/email — emails the generated PDF and DOCX to the user */
+export const exportEmail = (resumeId) => api.post(`/export/${resumeId}/email`);
+
 /** Trigger a browser download for a blob response. */
 export function downloadBlob(blob, filename) {
   const url = window.URL.createObjectURL(blob);

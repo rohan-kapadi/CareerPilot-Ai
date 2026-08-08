@@ -11,6 +11,8 @@ const AGENT_BADGES = {
   default: { label: 'CareerPilot', icon: '🧭', color: 'badge--default' },
 };
 
+import ReactMarkdown from 'react-markdown';
+
 export default function ChatThread({ turns = [], onAcceptDraft, onRejectDraft }) {
   const bottomRef = useRef(null);
 
@@ -19,12 +21,7 @@ export default function ChatThread({ turns = [], onAcceptDraft, onRejectDraft })
   }, [turns.length]);
 
   if (turns.length === 0) {
-    return (
-      <div className="chat-empty">
-        <span className="chat-empty__icon">🧭</span>
-        <p>Start a conversation with your AI career copilot.</p>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -59,7 +56,9 @@ function ChatBubble({ turn, onAcceptDraft, onRejectDraft }) {
           </span>
         )}
 
-        <p className="chat-bubble__text">{turn.content}</p>
+        <div className="chat-bubble__text">
+          <ReactMarkdown>{turn.content}</ReactMarkdown>
+        </div>
 
         {turn.sectionDraft?.draft && (
           <SectionDraftCard

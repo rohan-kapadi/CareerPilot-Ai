@@ -34,27 +34,55 @@ export default function MemoryGraph({ memories = [], onNodeClick }) {
     // Clear previous render
     d3.select(el).selectAll('*').remove();
 
-    // Build nodes
-    const nodes = memories.map(m => ({
-      id:         m._id,
-      label:      (m.userModifiedContent || m.content).slice(0, 28) + '…',
-      type:       m.type,
-      category:   m.category,
-      confidence: m.confidence || 0.7,
-      raw:        m,
-    }));
-
-    // Build edges: connect memories of the same category
+    // Build Hub-and-Spoke nodes
+    const nodes = [];
     const links = [];
-    const catMap = {};
-    nodes.forEach(n => {
-      if (!catMap[n.category]) catMap[n.category] = [];
-      catMap[n.category].push(n.id);
+
+    // 1. Central Core Profile Hub
+    nodes.push({
+      id: 'core',
+      label: 'Core Profile',
+      isHub: true,
+      category: 'core',
+      radius: 24,
+      fill: '#1e293b'
     });
-    Object.values(catMap).forEach(ids => {
-      for (let i = 0; i < ids.length - 1; i++) {
-        links.push({ source: ids[i], target: ids[i + 1] });
-      }
+
+    const catMap = {};
+    memories.forEach(m => {
+      if (!catMap[m.category]) catMap[m.category] = [];
+      catMap[m.category].push(m);
+    });
+
+    // 2. Category Hubs
+    Object.keys(catMap).forEach(cat => {
+      const catId = `hub-${cat}`;
+      nodes.push({
+        id: catId,
+        label: cat.charAt(0).toUpperCase() + cat.slice(1),
+        isHub: true,
+        category: cat,
+        radius: 16,
+        fill: '#475569'
+      });
+      // Link category to core
+      links.push({ source: 'core', target: catId, isHubLink: true });
+
+      // 3. Memory Nodes
+      catMap[cat].forEach(m => {
+        nodes.push({
+          id:         m._id,
+          label:      (m.userModifiedContent || m.content).slice(0, 24) + '…',
+          type:       m.type,
+          category:   m.category,
+          confidence: m.confidence || 0.7,
+          raw:        m,
+          radius:     (m.confidence || 0.7) * 16 + 8,
+          fill:       TYPE_COLORS[m.type] || '#6366f1'
+        });
+        // Link memory to category
+        links.push({ source: catId, target: m._id, isHubLink: false });
+      });
     });
 
     const svg = d3.select(el)
@@ -72,10 +100,10 @@ export default function MemoryGraph({ memories = [], onNodeClick }) {
 
     // Simulation
     const sim = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id(d => d.id).distance(90))
-      .force('charge', d3.forceManyBody().strength(-200))
+      .force('link', d3.forceLink(links).id(d => d.id).distance(d => d.isHubLink ? 110 : 70))
+      .force('charge', d3.forceManyBody().strength(d => d.isHub ? -300 : -120))
       .force('center', d3.forceCenter(W / 2, H / 2))
-      .force('collision', d3.forceCollide(35));
+      .force('collision', d3.forceCollide(d => d.radius + 12));
 
     // Links
     const link = svg.append('g')

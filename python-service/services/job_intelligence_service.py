@@ -43,9 +43,9 @@ Return a STRICT JSON object with this exact schema:
 }}
 
 ## SCORING LOGIC
-- keyword_match: Extract ALL technical skills, tools, frameworks, methodologies, certifications, and role-specific nouns from the JD. Score = (matched/total)*100
+- keyword_match: Extract ALL technical skills, tools, frameworks, methodologies, certifications, and role-specific nouns from the JD. CROSS-REFERENCE these with the RESUME. Put found skills in "matched" and unfound skills in "missing". Score = (matched/total)*100
 - section_structure: Check for Summary/Objective, Experience, Education, Skills, Certifications (if mentioned in JD), Projects. Score = (present/required)*100
-- skills_alignment: Focus only on skills explicitly listed in JD requirements/nice-to-haves
+- skills_alignment: Focus only on skills explicitly listed in JD requirements/nice-to-haves. CROSS-REFERENCE with the RESUME. Put unfound skills in "missing_skills".
 - formatting_score: Penalize if resume has tables (-15), columns (-10), headers/footers (-8), images/graphics (-20), non-standard section names (-5 each)
 - action_verbs: Count unique strong action verbs. Penalize generic verbs: "responsible for", "worked on", "helped with", "assisted in"
 

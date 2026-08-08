@@ -90,6 +90,7 @@ export default function ResumeViewerPage() {
             <span className="font-display text-base font-semibold" style={{ color: '#111827' }}>📄 Resume</span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
+            <button className="btn btn--primary" onClick={() => navigate(`/builder/${id}`)}>✨ Build with AI</button>
             <button className="btn btn--ghost" onClick={() => navigate(`/editor/${id}`)}>✏️ Edit</button>
             <button className="btn btn--ghost" onClick={() => navigate(`/suggestions?resumeId=${id}`)}>🛠️ Suggestions</button>
             <button className="btn btn--ghost" onClick={() => setShowExport(true)}>⬇️ Export</button>

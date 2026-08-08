@@ -60,9 +60,9 @@ export default function LoginPage() {
         <div className="login-card login-card--form animate-slide-up">
           {/* Card header */}
           <div className="lc-header">
-            <div className="lc-brand">
-              <span className="lc-brand__icon">✦</span>
-              <span className="lc-brand__name">CareerPilot AI</span>
+            <div className="lc-brand" style={{ display: 'flex', alignItems: 'center' }}>
+              <img src="/logo.svg" alt="CareerPilot Logo" className="h-8 w-8 object-contain" />
+              <span className="lc-brand__name" style={{ marginLeft: '6px' }}>CareerPilot AI</span>
             </div>
             <button
               id="toggle-auth-mode"

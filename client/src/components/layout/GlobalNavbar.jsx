@@ -44,8 +44,8 @@ export default function GlobalNavbar() {
           onClick={() => navigate('/dashboard')}
           className="flex flex-shrink-0 items-center gap-2.5"
         >
-          <div className="brand-mark h-9 w-9 rounded-xl text-white text-base">✦</div>
-          <span style={{ fontWeight: 700, fontSize: '1rem', color: '#111827', whiteSpace: 'nowrap' }}>CareerPilot AI</span>
+          <img src="/logo.svg" alt="CareerPilot Logo" className="h-9 w-9 rounded-xl object-contain" />
+          <span style={{ fontWeight: 700, fontSize: '1.25rem', color: '#111827', whiteSpace: 'nowrap', marginLeft: '2px' }}>CareerPilot AI</span>
         </button>
 
         <nav

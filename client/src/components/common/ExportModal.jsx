@@ -16,6 +16,7 @@ import {
   previewExport,
   exportResume,
   downloadBlob,
+  exportEmail,
 } from '../../api/versionApi';
 
 const FORMATS = [
@@ -86,6 +87,20 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
       setWorking(false);
     }
   }
+
+  async function handleEmail() {
+    setWorking(true);
+    try {
+      await exportEmail(resumeId);
+      toast.success('Resume sent to your email!');
+      onClose?.();
+    } catch (err) {
+      toast.error('Failed to email resume. Please try again.');
+    } finally {
+      setWorking(false);
+    }
+  }
+
 
   return (
     <div
@@ -211,6 +226,13 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
                 className="back-link px-4 py-2"
               >
                 Cancel
+              </button>
+              <button
+                onClick={handleEmail}
+                disabled={working}
+                className="rounded-lg border border-blue-500 px-5 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-500/10 disabled:opacity-50"
+              >
+                {working ? 'Sending…' : `✉️ Email to me`}
               </button>
               <button
                 onClick={handleDownload}

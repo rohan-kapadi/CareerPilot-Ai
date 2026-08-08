@@ -129,12 +129,6 @@ async function sendMessage(req, res) {
       nextQuestion:    result.nextQuestion,
       sectionComplete: result.sectionComplete,
     };
-
-    // If this is the first builder message, add a welcome message
-    if (!conversationId) {
-      assistantContent = getOpeningQuestion(targetSection);
-      sectionDraft = {};
-    }
   } else {
     // Phase 3: Inject accepted memories into coach context
     // injectContext also writes MemoryUsageLog entries
