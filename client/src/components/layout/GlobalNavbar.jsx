@@ -49,15 +49,19 @@ export default function GlobalNavbar() {
         </button>
 
         <nav
-          className="hide-scrollbar flex min-w-0 flex-1 items-center gap-1 overflow-x-auto"
-          style={{ scrollbarWidth: 'none' }}
+          className="hide-scrollbar flex min-w-0 flex-1 items-center gap-1 overflow-x-auto relative"
+          style={{ 
+            scrollbarWidth: 'none',
+            WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 12px), transparent 100%)',
+            maskImage: 'linear-gradient(to right, black calc(100% - 12px), transparent 100%)'
+          }}
         >
           {NAV_LINKS.map(({ to, label, badge }) => (
             <Link
               key={to}
               to={to}
               style={{
-                padding: '0.35rem 0.75rem',
+                padding: '0.35rem 0.6rem',
                 borderRadius: '999px',
                 fontSize: '0.78rem',
                 fontWeight: 500,
@@ -81,6 +85,7 @@ export default function GlobalNavbar() {
               )}
             </Link>
           ))}
+          <div style={{ flexShrink: 0, width: '12px' }} />
         </nav>
 
         <button
