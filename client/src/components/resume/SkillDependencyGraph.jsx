@@ -182,7 +182,7 @@ export default function SkillDependencyGraph({ roadmaps = [], onNodeClick }) {
           >
             ✕
           </button>
-          <h4 className="pr-6 font-semibold text-white">{selected.roadmap?.skill}</h4>
+          <h4 className="pr-6 font-semibold" style={{ color: '#ffffff' }}>{selected.roadmap?.skill}</h4>
           <p className="text-xs text-gray-400">
             {selected.roadmap?.milestones?.length ?? 0} milestones ·{' '}
             {selected.roadmap?.courses?.length ?? 0} courses

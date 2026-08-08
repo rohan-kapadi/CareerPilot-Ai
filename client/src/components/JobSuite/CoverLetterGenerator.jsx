@@ -76,8 +76,8 @@ export default function CoverLetterGenerator({ resumeData }) {
   return (
     <div className="space-y-6 animate-fade-in flex flex-col h-full">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-semibold text-dark-50 flex items-center gap-2">
-          <Mail className="h-4 w-4 text-cyan-400" /> Cover Letter Generator
+        <h3 className="font-semibold flex items-center gap-2" style={{ color: '#111827' }}>
+          <Mail className="h-4 w-4 text-blue-500" /> Cover Letter Generator
         </h3>
         {coverLetter && (
           <button 
@@ -90,14 +90,15 @@ export default function CoverLetterGenerator({ resumeData }) {
       </div>
 
       {(showSettings || !coverLetter) && (
-        <div className={`rounded-lg border border-dark-600 bg-dark-800/40 p-4 space-y-4 ${isIdle ? 'opacity-60 grayscale-[0.5]' : ''}`}>
+        <div className={`rounded-lg p-4 space-y-4 ${isIdle ? 'opacity-60 grayscale-[0.5]' : ''}`} style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(255,255,255,0.6)' }}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs font-medium text-dark-300 mb-1">Tone</label>
-              <select 
+              <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Tone</label>
+              <select
                 value={coverLetterParams.tone}
                 onChange={e => setCoverLetterParams({...coverLetterParams, tone: e.target.value})}
-                className="w-full rounded-md border border-dark-600 bg-dark-900 px-2 py-1.5 text-sm text-dark-100 outline-none focus:border-cyan-400"
+                className="w-full rounded-md px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
+                style={{ border: '1px solid rgba(0,0,0,0.1)', background: 'rgba(255,255,255,0.85)', color: '#111827' }}
               >
                 <option>Professional</option>
                 <option>Conversational</option>
@@ -106,11 +107,12 @@ export default function CoverLetterGenerator({ resumeData }) {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-dark-300 mb-1">Length</label>
-              <select 
+              <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Length</label>
+              <select
                 value={coverLetterParams.length}
                 onChange={e => setCoverLetterParams({...coverLetterParams, length: e.target.value})}
-                className="w-full rounded-md border border-dark-600 bg-dark-900 px-2 py-1.5 text-sm text-dark-100 outline-none focus:border-cyan-400"
+                className="w-full rounded-md px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
+                style={{ border: '1px solid rgba(0,0,0,0.1)', background: 'rgba(255,255,255,0.85)', color: '#111827' }}
               >
                 <option>Standard</option>
                 <option>Brief</option>
@@ -118,11 +120,12 @@ export default function CoverLetterGenerator({ resumeData }) {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-dark-300 mb-1">Style</label>
-              <select 
+              <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Style</label>
+              <select
                 value={coverLetterParams.style}
                 onChange={e => setCoverLetterParams({...coverLetterParams, style: e.target.value})}
-                className="w-full rounded-md border border-dark-600 bg-dark-900 px-2 py-1.5 text-sm text-dark-100 outline-none focus:border-cyan-400"
+                className="w-full rounded-md px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
+                style={{ border: '1px solid rgba(0,0,0,0.1)', background: 'rgba(255,255,255,0.85)', color: '#111827' }}
               >
                 <option>Story-driven</option>
                 <option>Achievement-focused</option>
@@ -131,11 +134,12 @@ export default function CoverLetterGenerator({ resumeData }) {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-dark-300 mb-1">Format</label>
-              <select 
+              <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Format</label>
+              <select
                 value={coverLetterParams.format}
                 onChange={e => setCoverLetterParams({...coverLetterParams, format: e.target.value})}
-                className="w-full rounded-md border border-dark-600 bg-dark-900 px-2 py-1.5 text-sm text-dark-100 outline-none focus:border-cyan-400"
+                className="w-full rounded-md px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
+                style={{ border: '1px solid rgba(0,0,0,0.1)', background: 'rgba(255,255,255,0.85)', color: '#111827' }}
               >
                 <option>Modern</option>
                 <option>Traditional</option>
@@ -163,7 +167,7 @@ export default function CoverLetterGenerator({ resumeData }) {
       {coverLetter && !showSettings && (
         <div className="flex-1 flex flex-col mt-4 min-h-0 animate-fade-in">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4" /> Customized Letter
             </h4>
             <div className="flex gap-2">
@@ -171,16 +175,17 @@ export default function CoverLetterGenerator({ resumeData }) {
               <button onClick={handleDownload} className="btn-secondary py-1 px-2 text-xs flex items-center gap-1"><Download className="h-3 w-3"/> DOCX</button>
             </div>
           </div>
-          
-          <div className="flex-1 relative rounded-xl border border-dark-600 bg-white shadow-inner overflow-hidden flex flex-col min-h-[400px]">
+
+          <div className="flex-1 relative rounded-xl bg-white shadow-inner overflow-hidden flex flex-col min-h-[400px]" style={{ border: '1px solid rgba(0,0,0,0.08)' }}>
             <div className="p-6 md:p-8 flex-1 overflow-y-auto">
-              <div className="font-serif text-dark-900 max-w-2xl mx-auto space-y-4 leading-relaxed whitespace-pre-wrap">
+              <div className="font-serif max-w-2xl mx-auto space-y-4 leading-relaxed whitespace-pre-wrap" style={{ color: '#111827' }}>
                 <p>{coverLetter.salutation || 'Dear Hiring Manager,'}</p>
-                
+
                 <textarea
                   value={editableLetter}
                   onChange={(e) => setEditableLetter(e.target.value)}
-                  className="w-full bg-transparent border-0 outline-none resize-none font-serif text-dark-900 leading-relaxed min-h-[300px]"
+                  className="w-full bg-transparent border-0 outline-none resize-none rounded-lg font-serif leading-relaxed min-h-[300px] focus:ring-2 focus:ring-blue-400/40"
+                  style={{ color: '#111827' }}
                 />
                 
                 <p className="mt-6 pt-2">
@@ -195,7 +200,7 @@ export default function CoverLetterGenerator({ resumeData }) {
       )}
 
       {isIdle && !coverLetter && (
-        <div className="flex-1 flex items-center justify-center py-12 text-center text-dark-400 border border-dashed border-dark-700 rounded-xl mt-4">
+        <div className="flex-1 flex items-center justify-center py-12 text-center rounded-xl mt-4" style={{ color: '#6b7280', border: '1px dashed rgba(0,0,0,0.15)' }}>
            <div className="flex flex-col items-center">
              <Zap className="h-10 w-10 mb-3 opacity-20" />
              <p className="text-sm">Enter job details in the panel above to unlock the AI generator.</p>

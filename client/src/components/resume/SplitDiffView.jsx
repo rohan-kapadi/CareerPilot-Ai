@@ -25,20 +25,20 @@ export default function SplitDiffView({ comparison, onClose }) {
   const { left, right, changes = [], summary } = comparison;
 
   return (
-    <div className="space-y-5 rounded-2xl border border-white/10 bg-white/5 p-6">
+    <div className="panel-card space-y-5 p-6">
       {/* ── Header ── */}
-      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
+      <header
+        className="flex flex-wrap items-start justify-between gap-4 pb-4"
+        style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}
+      >
         <div>
-          <h3 className="text-lg font-semibold text-white">
+          <h3 className="text-lg font-semibold" style={{ color: '#111827' }}>
             Comparing v{left.versionNumber} → v{right.versionNumber}
           </h3>
-          <p className="mt-1 text-sm text-gray-400">{summary}</p>
+          <p className="mt-1 text-sm" style={{ color: '#6b7280' }}>{summary}</p>
         </div>
         {onClose && (
-          <button
-            onClick={onClose}
-            className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
-          >
+          <button onClick={onClose} className="back-link">
             ✕ Close
           </button>
         )}
@@ -52,7 +52,10 @@ export default function SplitDiffView({ comparison, onClose }) {
 
       {/* ── Field-level changes ── */}
       {changes.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-white/10 p-8 text-center text-gray-400">
+        <p
+          className="rounded-xl p-8 text-center text-sm"
+          style={{ border: '1px dashed rgba(0,0,0,0.12)', background: 'rgba(0,0,0,0.02)', color: '#6b7280' }}
+        >
           These two versions are identical.
         </p>
       ) : (
@@ -65,7 +68,7 @@ export default function SplitDiffView({ comparison, onClose }) {
                   <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${meta.tone}`}>
                     {meta.label}
                   </span>
-                  <span className="font-mono text-xs text-gray-500">{change.path}</span>
+                  <span className="font-mono text-xs" style={{ color: '#9ca3af' }}>{change.path}</span>
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="diff-block diff-block--before">{renderValue(change.before)}</div>
@@ -82,12 +85,12 @@ export default function SplitDiffView({ comparison, onClose }) {
 
 function VersionHeader({ version, side }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">{side}</p>
-      <p className="mt-1 font-medium text-white">v{version.versionNumber}</p>
-      <p className="text-xs text-gray-500">{new Date(version.createdAt).toLocaleString()}</p>
+    <div className="rounded-xl p-3" style={{ background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.07)' }}>
+      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>{side}</p>
+      <p className="mt-1 font-medium" style={{ color: '#111827' }}>v{version.versionNumber}</p>
+      <p className="text-xs" style={{ color: '#9ca3af' }}>{new Date(version.createdAt).toLocaleString()}</p>
       {version.diffSummary && (
-        <p className="mt-1 text-xs text-gray-400">{version.diffSummary}</p>
+        <p className="mt-1 text-xs" style={{ color: '#6b7280' }}>{version.diffSummary}</p>
       )}
     </div>
   );

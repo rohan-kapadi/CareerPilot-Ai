@@ -42,15 +42,16 @@ export default function JobDashboard({ resume }) {
       <div className="panel-card flex min-h-[500px] flex-1 flex-col rounded-[1.5rem] p-5">
         
         {/* Tabs */}
-        <div className="mb-5 flex w-full flex-wrap items-center justify-between gap-4 border-b border-dark-700 pb-4">
+        <div className="mb-5 flex w-full flex-wrap items-center justify-between gap-4 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <div className="flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveTab('ats')}
             className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all ${
-              activeTab === 'ats' 
-              ? 'bg-orange-200/10 text-orange-100' 
-              : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200'
+              activeTab === 'ats'
+              ? 'bg-orange-200/40 text-orange-700'
+              : 'hover:bg-black/5'
             }`}
+            style={activeTab !== 'ats' ? { color: '#6b7280' } : undefined}
           >
             <BarChart3 className="h-4 w-4" />
             ATS Score
@@ -58,10 +59,11 @@ export default function JobDashboard({ resume }) {
           <button
             onClick={() => setActiveTab('enhance')}
             className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all ${
-              activeTab === 'enhance' 
-              ? 'bg-orange-200/10 text-orange-100' 
-              : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200'
+              activeTab === 'enhance'
+              ? 'bg-orange-200/40 text-orange-700'
+              : 'hover:bg-black/5'
             }`}
+            style={activeTab !== 'enhance' ? { color: '#6b7280' } : undefined}
           >
             <Sparkles className="h-4 w-4" />
             Enhancements
@@ -69,10 +71,11 @@ export default function JobDashboard({ resume }) {
           <button
             onClick={() => setActiveTab('cover')}
             className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all ${
-              activeTab === 'cover' 
-              ? 'bg-orange-200/10 text-orange-100' 
-              : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200'
+              activeTab === 'cover'
+              ? 'bg-orange-200/40 text-orange-700'
+              : 'hover:bg-black/5'
             }`}
+            style={activeTab !== 'cover' ? { color: '#6b7280' } : undefined}
           >
             <Mail className="h-4 w-4" />
             Cover Letter

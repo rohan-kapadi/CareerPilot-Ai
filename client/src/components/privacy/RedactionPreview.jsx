@@ -26,23 +26,23 @@ export default function RedactionPreview({ resumeId, flags = [] }) {
 
   if (!flags.length) {
     return (
-      <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-        <p className="text-gray-400">No sensitive fields flagged for redaction.</p>
+      <div className="panel-card p-4">
+        <p style={{ color: '#6b7280' }}>No sensitive fields flagged for redaction.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
-      <h3 className="text-lg font-semibold text-white mb-4">Export Redaction Preview</h3>
-      
+    <div className="panel-card p-6">
+      <h3 className="text-lg font-semibold mb-4" style={{ color: '#111827' }}>Export Redaction Preview</h3>
+
       <div className="mb-6 space-y-2">
-        <p className="text-gray-400 text-sm">The following fields were flagged as potentially sensitive:</p>
-        <ul className="list-disc pl-5 text-gray-300">
+        <p className="text-sm" style={{ color: '#6b7280' }}>The following fields were flagged as potentially sensitive:</p>
+        <ul className="list-disc pl-5" style={{ color: '#374151' }}>
           {flags.map((flag, idx) => (
             <li key={idx}>
               <span className="font-medium text-blue-400">{flag.flagType}</span>
-              <span className="text-gray-500 text-sm ml-2">({flag.fieldPath})</span>
+              <span className="text-sm ml-2" style={{ color: '#9ca3af' }}>({flag.fieldPath})</span>
             </li>
           ))}
         </ul>
@@ -60,8 +60,8 @@ export default function RedactionPreview({ resumeId, flags = [] }) {
 
       {redactedData && (
         <div className="mt-6">
-          <h4 className="text-gray-300 font-medium mb-2">Redacted Output:</h4>
-          <pre className="bg-black/40 p-4 rounded-lg overflow-x-auto text-xs text-green-400 border border-white/5">
+          <h4 className="font-medium mb-2" style={{ color: '#374151' }}>Redacted Output:</h4>
+          <pre className="draft-json text-green-700">
             {JSON.stringify(redactedData.sections.personalInfo, null, 2)}
           </pre>
         </div>

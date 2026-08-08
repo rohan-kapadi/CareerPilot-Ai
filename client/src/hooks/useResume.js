@@ -26,9 +26,9 @@ export default function useResume(resumeId) {
           setLoading(false);
         }
       })
-      .catch((err) => {
+      .catch(() => {
         if (!cancelled) {
-          toast.error(err.response?.data?.message || 'Failed to load resume');
+          toast.error('Failed to load resume. It may no longer exist.');
           setLoading(false);
         }
       });

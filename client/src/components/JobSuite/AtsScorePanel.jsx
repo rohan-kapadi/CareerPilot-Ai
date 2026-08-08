@@ -30,7 +30,7 @@ export default function AtsScorePanel() {
 
   if (analysisStatus === 'idle') {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center text-dark-400">
+      <div className="flex flex-col items-center justify-center py-12 text-center" style={{ color: '#6b7280' }}>
         <Zap className="h-12 w-12 mb-4 opacity-50" />
         <p>Paste a job description to unlock ATS compatibility score.</p>
       </div>
@@ -41,12 +41,12 @@ export default function AtsScorePanel() {
     return (
       <div className="space-y-6 animate-pulse">
         <div className="flex justify-center">
-          <div className="h-32 w-32 rounded-full border-4 border-dark-700 bg-dark-800/50"></div>
+          <div className="h-32 w-32 rounded-full border-4" style={{ borderColor: 'rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.04)' }}></div>
         </div>
         <div className="space-y-4">
-          <div className="h-4 w-full rounded bg-dark-700"></div>
-          <div className="h-4 w-4/5 rounded bg-dark-700"></div>
-          <div className="h-4 w-full rounded bg-dark-700"></div>
+          <div className="h-4 w-full rounded" style={{ background: 'rgba(0,0,0,0.06)' }}></div>
+          <div className="h-4 w-4/5 rounded" style={{ background: 'rgba(0,0,0,0.06)' }}></div>
+          <div className="h-4 w-full rounded" style={{ background: 'rgba(0,0,0,0.06)' }}></div>
         </div>
       </div>
     );
@@ -95,7 +95,7 @@ export default function AtsScorePanel() {
         <div className="relative h-40 w-40">
           <svg className="h-full w-full rotate-[-90deg]" viewBox="0 0 36 36">
             <path
-              className="stroke-dark-700"
+              style={{ stroke: 'rgba(0,0,0,0.08)' }}
               strokeWidth="3"
               fill="none"
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -114,48 +114,48 @@ export default function AtsScorePanel() {
             <span className={`text-4xl font-display font-bold ${getScoreColor(animatedScore)}`}>
               {animatedScore}
             </span>
-            <span className="text-xs font-semibold text-dark-400 uppercase tracking-wider mt-1 border-t border-dark-700 pt-1 w-16 text-center">
+            <span className="text-xs font-semibold uppercase tracking-wider mt-1 pt-1 w-16 text-center" style={{ color: '#6b7280', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
               / 100
             </span>
           </div>
         </div>
-        <p className="mt-4 text-sm font-medium text-dark-200">
+        <p className="mt-4 text-sm font-medium" style={{ color: '#111827' }}>
           ● {atsScore.score_label || 'Evaluated'}
         </p>
       </div>
 
       {/* Breakdown Bars */}
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold uppercase tracking-wider text-dark-300 border-b border-dark-700/50 pb-2">
+        <h4 className="text-sm font-semibold uppercase tracking-wider pb-2" style={{ color: '#374151', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
           Score Breakdown
         </h4>
         {bars.map((item, i) => (
           <div key={i}>
             <div className="flex justify-between text-xs mb-1">
-              <span className="text-dark-200">{item.label}</span>
-              <span className="font-semibold text-dark-50">{item.score}%</span>
+              <span style={{ color: '#111827' }}>{item.label}</span>
+              <span className="font-semibold" style={{ color: '#111827' }}>{item.score}%</span>
             </div>
-            <div className="h-2 w-full bg-dark-700 rounded-full overflow-hidden">
-              <div 
-                className={`h-full ${getScoreRingColor(item.score).replace('stroke-', 'bg-')}`} 
+            <div className="h-2 w-full rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)' }}>
+              <div
+                className={`h-full ${getScoreRingColor(item.score).replace('stroke-', 'bg-')}`}
                 style={{ width: `${item.score}%`, transition: 'width 1s ease-out' }}
               />
             </div>
-            {item.notice && <div className="text-[10px] text-dark-400 mt-1">{item.notice}</div>}
+            {item.notice && <div className="text-[10px] mt-1" style={{ color: '#6b7280' }}>{item.notice}</div>}
           </div>
         ))}
       </div>
 
       {/* Keywords */}
-      <div className="space-y-4 border-t border-dark-700/50 pt-4">
+      <div className="space-y-4 pt-4" style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
         {kwMatch.matched && kwMatch.matched.length > 0 && (
           <div>
-            <h4 className="flex items-center gap-2 text-sm font-medium text-emerald-400 mb-2">
+            <h4 className="flex items-center gap-2 text-sm font-medium text-emerald-600 mb-2">
               <CheckCircle2 className="h-4 w-4" /> Matched Keywords ({kwMatch.matched.length})
             </h4>
             <div className="flex flex-wrap gap-2">
               {kwMatch.matched.map((kw, i) => (
-                <span key={i} className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">
+                <span key={i} className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-700">
                   {kw}
                 </span>
               ))}
@@ -165,12 +165,12 @@ export default function AtsScorePanel() {
 
         {kwMatch.missing && kwMatch.missing.length > 0 && (
           <div>
-            <h4 className="flex items-center gap-2 text-sm font-medium text-red-400 mt-4 mb-2">
+            <h4 className="flex items-center gap-2 text-sm font-medium text-red-500 mt-4 mb-2">
               <AlertCircle className="h-4 w-4" /> Missing Keywords ({kwMatch.missing.length})
             </h4>
             <div className="flex flex-wrap gap-2">
               {kwMatch.missing.map((kw, i) => (
-                <span key={i} className="rounded border border-red-500/20 bg-red-500/10 px-2 py-1 text-xs text-red-300 opacity-80">
+                <span key={i} className="rounded border border-red-500/20 bg-red-500/10 px-2 py-1 text-xs text-red-600">
                   {kw}
                 </span>
               ))}
@@ -181,14 +181,14 @@ export default function AtsScorePanel() {
 
       {/* Quick Wins */}
       {atsScore.quick_wins && atsScore.quick_wins.length > 0 && (
-        <div className="space-y-3 border-t border-dark-700/50 pt-4">
-          <h4 className="text-sm font-semibold uppercase tracking-wider text-dark-300">Quick Wins</h4>
+        <div className="space-y-3 pt-4" style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+          <h4 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#374151' }}>Quick Wins</h4>
           {atsScore.quick_wins.map((qw, i) => (
-            <div key={i} className="rounded-lg border border-dark-600 bg-dark-800/40 p-3 flex gap-3 items-start">
-              <AlertTriangle className={`h-4 w-4 shrink-0 mt-0.5 ${qw.priority === 'HIGH' ? 'text-red-400' : qw.priority === 'MEDIUM' ? 'text-amber-400' : 'text-slate-400'}`} />
+            <div key={i} className="rounded-lg p-3 flex gap-3 items-start" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(255,255,255,0.6)' }}>
+              <AlertTriangle className={`h-4 w-4 shrink-0 mt-0.5 ${qw.priority === 'HIGH' ? 'text-red-500' : qw.priority === 'MEDIUM' ? 'text-amber-500' : 'text-slate-500'}`} />
               <div>
-                <p className="text-sm font-medium text-dark-100">{qw.action}</p>
-                <p className="text-xs text-dark-400 mt-1">{qw.impact}</p>
+                <p className="text-sm font-medium" style={{ color: '#111827' }}>{qw.action}</p>
+                <p className="text-xs mt-1" style={{ color: '#6b7280' }}>{qw.impact}</p>
               </div>
             </div>
           ))}

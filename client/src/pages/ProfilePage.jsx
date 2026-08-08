@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { getUserProfile, putUserProfile, exportProfilePdf } from '../services/api';
 import toast from 'react-hot-toast';
 import {
-  ArrowLeft,
   Award,
   Code2,
   Loader2,
-  LogOut,
   Mail,
   PencilLine,
   Save,
@@ -17,9 +15,7 @@ import {
   Download,
 } from 'lucide-react';
 import ResumeEditor from '../components/ResumeEditor';
-import ThemeToggle from '../components/ThemeToggle';
 import {
-  clearSession,
   getAuthToken,
   getDisplayName,
   getStoredUser,
@@ -61,8 +57,8 @@ export default function ProfilePage() {
     return (
       <div className="app-shell flex items-center justify-center">
         <div className="panel-card flex items-center gap-3 px-5 py-4">
-          <Loader2 className="h-5 w-5 animate-spin text-cyan-300" />
-          <span className="text-sm text-dark-200">Loading profile...</span>
+          <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+          <span className="text-sm" style={{ color: '#374151' }}>Loading profile...</span>
         </div>
       </div>
     );
@@ -72,7 +68,7 @@ export default function ProfilePage() {
     return (
       <div className="app-shell flex items-center justify-center px-6">
         <div className="panel-card w-full max-w-md p-6 text-center">
-          <p className="text-dark-300">We could not load your profile right now.</p>
+          <p style={{ color: '#374151' }}>We could not load your profile right now.</p>
           <button
             onClick={() => navigate('/dashboard')}
             className="btn-secondary mt-5"
@@ -139,60 +135,25 @@ export default function ProfilePage() {
 
   return (
     <div className="app-shell">
-      <header className="sticky top-0 z-50 border-b border-dark-700/70 bg-dark-950/75 backdrop-blur-xl">
-        <div className="page-wrap flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="btn-ghost flex items-center gap-2 px-3 py-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back</span>
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="brand-mark h-9 w-9 rounded-xl">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <span className="font-display text-base font-semibold text-dark-100">Profile</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-          <button
-            onClick={() => {
-              clearSession();
-              navigate('/login');
-            }}
-            className="btn-ghost flex items-center gap-2 px-3 py-2"
-          >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Sign Out</span>
-          </button>
-          </div>
-        </div>
-      </header>
-
       <main className="page-wrap py-8 animate-fade-in">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <section className="panel-card-strong overflow-hidden">
-            <div className="border-b border-dark-700/70 bg-gradient-to-r from-orange-300/25 via-amber-300/15 to-teal-300/20 px-6 py-6">
+            <div style={{ borderBottom: '1px solid rgba(0,0,0,0.07)', background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(59,130,246,0.06))', padding: '1.5rem' }}>
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-orange-200/40 bg-orange-200/10 text-2xl font-bold text-orange-100">
+                  <div style={{ display: 'flex', width: '4rem', height: '4rem', alignItems: 'center', justifyContent: 'center', borderRadius: '1rem', border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(255,255,255,0.8)', fontSize: '1.5rem', fontWeight: 800, color: '#374151' }}>
                     {userInitial}
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-orange-100">Global profile</p>
-                    <h1 className="font-display text-2xl font-semibold text-dark-50">{displayName}</h1>
-                    <p className="mt-1 flex items-center gap-1.5 text-sm text-dark-300">
+                    <p style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#9ca3af', marginBottom: '0.2rem' }}>Global profile</p>
+                    <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{displayName}</h1>
+                    <p style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', color: '#6b7280' }}>
                       <Mail className="h-4 w-4" />
                       {profile?.email || localUser?.email || 'No email available'}
                     </p>
                   </div>
                 </div>
-
-                <div className="pill flex items-center gap-1.5 border-amber-300/30 bg-amber-300/10 text-amber-200">
+                <div className="pill" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.25)', color: '#1d4ed8' }}>
                   <Award className="h-4 w-4" />
                   {skills.length} skills tracked
                 </div>
@@ -200,7 +161,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-5 p-6">
-              <p className="text-sm text-dark-400">
+              <p className="text-sm" style={{ color: '#6b7280' }}>
                 Your profile acts as the master record. Uploading a new resume refreshes sections so your
                 latest details stay in sync.
               </p>
@@ -247,26 +208,23 @@ export default function ProfilePage() {
 
           <section className="panel-card p-6">
             <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-xl border border-teal-300/30 bg-teal-300/10 p-2.5">
-                <Code2 className="h-5 w-5 text-teal-200" />
+              <div className="rounded-xl border border-teal-500/30 bg-teal-500/10 p-2.5">
+                <Code2 className="h-5 w-5 text-teal-600" />
               </div>
               <div>
-                <h2 className="font-display text-xl font-semibold text-dark-50">Skill inventory</h2>
-                <p className="text-sm text-dark-400">Combined from your parsed resumes and extension updates.</p>
+                <h2 className="font-display text-xl font-semibold" style={{ color: '#111827' }}>Skill inventory</h2>
+                <p className="text-sm" style={{ color: '#6b7280' }}>Combined from your parsed resumes and extension updates.</p>
               </div>
             </div>
 
             {skills.length === 0 ? (
-              <p className="rounded-2xl border border-dark-700/70 bg-dark-900/60 px-4 py-6 text-center text-sm text-dark-400">
+              <p className="rounded-2xl px-4 py-6 text-center text-sm" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }}>
                 No skills yet. Upload a resume or add missing skills from job analysis.
               </p>
             ) : (
-              <div className="flex max-h-[380px] flex-wrap gap-2 overflow-y-auto rounded-2xl border border-dark-700/70 bg-dark-900/60 p-4">
+              <div className="flex max-h-[380px] flex-wrap gap-2 overflow-y-auto rounded-2xl p-4" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)' }}>
                 {skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="inline-flex items-center rounded-xl border border-dark-600/80 bg-dark-800/80 px-3 py-1.5 text-sm text-dark-100"
-                  >
+                  <span key={skill} className="chip chip--neutral">
                     {skill}
                   </span>
                 ))}
@@ -278,8 +236,8 @@ export default function ProfilePage() {
         {isEditing && (
           <section className="panel-card mt-6 p-6">
             <div className="mb-5 flex items-center gap-2">
-              <User className="h-5 w-5 text-cyan-300" />
-              <h2 className="font-display text-xl font-semibold text-dark-50">Edit global profile sections</h2>
+              <User className="h-5 w-5 text-blue-500" />
+              <h2 className="font-display text-xl font-semibold" style={{ color: '#111827' }}>Edit global profile sections</h2>
             </div>
             <ResumeEditor sections={profile} onUpdateSection={handleUpdateSection} />
           </section>

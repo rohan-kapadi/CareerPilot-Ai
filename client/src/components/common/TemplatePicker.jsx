@@ -35,7 +35,7 @@ export default function TemplatePicker({ templates = [], value, onChange }) {
                 <span className="h-0.5 w-full rounded-sm bg-slate-200" />
                 <span className="h-0.5 w-2/3 rounded-sm bg-slate-200" />
               </span>
-              <span className={`text-xs font-medium ${active ? 'text-blue-300' : 'text-gray-400'}`}>
+              <span className={`text-xs font-medium ${active ? 'text-blue-700' : 'text-gray-400'}`}>
                 {template.label}
               </span>
             </button>

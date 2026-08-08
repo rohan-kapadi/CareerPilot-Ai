@@ -61,13 +61,13 @@ export default function SkillsPanel({
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="border-b border-dark-700/60 p-5">
+      <div className="p-5" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
         <div className="flex items-center gap-3 mb-4">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-teal-300/30 bg-teal-300/10">
-            <Code2 className="h-5 w-5 text-teal-200" />
+            <Code2 className="h-5 w-5 text-teal-600" />
           </div>
-          <h3 className="font-semibold text-dark-100">Skills</h3>
-          <span className="ml-auto rounded-full border border-dark-600/80 bg-dark-800/80 px-2 py-0.5 text-xs text-dark-300">
+          <h3 className="font-semibold" style={{ color: '#111827' }}>Skills</h3>
+          <span className="ml-auto rounded-full px-2 py-0.5 text-xs" style={{ border: '1px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.04)', color: '#374151' }}>
             {skills.length}
           </span>
         </div>
@@ -98,7 +98,7 @@ export default function SkillsPanel({
 
       <div className="max-h-[430px] space-y-2 overflow-y-auto p-5">
         {skills.length === 0 ? (
-          <p className="rounded-2xl border border-dark-700/70 bg-dark-900/60 py-5 text-center text-sm text-dark-400">
+          <p className="rounded-2xl py-5 text-center text-sm" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }}>
             No skills yet. Add your first skill above.
           </p>
         ) : (
@@ -106,18 +106,19 @@ export default function SkillsPanel({
             {skills.map((skill) => (
               <span
                 key={skill}
-                className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-medium transition-all
-                  ${isMatched(skill)
-                    ? 'border-emerald-300/30 bg-emerald-300/10 text-emerald-100'
-                    : 'border-dark-600/80 bg-dark-800/80 text-dark-200'
-                  }`}
+                className="inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-medium transition-all"
+                style={isMatched(skill)
+                  ? { borderColor: 'rgba(16,185,129,0.3)', background: 'rgba(16,185,129,0.1)', color: '#065f46' }
+                  : { borderColor: 'rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.03)', color: '#374151' }
+                }
               >
                 {isMatched(skill) && <Check className="h-3 w-3" />}
                 {skill}
                 <button
                   type="button"
                   onClick={() => handleRemoveSkill(skill)}
-                  className="ml-0.5 text-dark-500 transition-colors hover:text-red-300"
+                  className="ml-0.5 transition-colors hover:text-red-600"
+                  style={{ color: '#9ca3af' }}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -127,13 +128,13 @@ export default function SkillsPanel({
         )}
 
         {filteredMissingSkills.length > 0 && (
-          <div className="mt-4 border-t border-dark-700/60 pt-4">
+          <div className="mt-4 pt-4" style={{ borderTop: '1px solid rgba(0,0,0,0.07)' }}>
             <div className="flex items-center gap-2 mb-3">
-              <AlertCircle className="h-4 w-4 text-orange-200" />
-              <span className="text-xs font-medium uppercase tracking-[0.16em] text-amber-300">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <span className="text-xs font-medium uppercase tracking-[0.16em] text-amber-700">
                 Missing Skills
               </span>
-              <span className="ml-auto rounded-full border border-dark-600/80 bg-dark-800/80 px-2 py-0.5 text-xs text-dark-300">
+              <span className="ml-auto rounded-full px-2 py-0.5 text-xs" style={{ border: '1px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.04)', color: '#374151' }}>
                 {filteredMissingSkills.length}
               </span>
             </div>
@@ -169,7 +170,7 @@ function MissingSkillButton({ skill, onAdd }) {
 
   if (state === 'done') {
     return (
-      <div className="flex items-center gap-2 rounded-xl border border-emerald-300/30 bg-emerald-300/10 px-4 py-2.5 text-sm font-medium text-emerald-100 transition-all">
+      <div className="flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all" style={{ borderColor: 'rgba(16,185,129,0.3)', background: 'rgba(16,185,129,0.1)', color: '#065f46' }}>
         <Check className="h-4 w-4 flex-shrink-0" />
         <span>{skill}</span>
         <span className="ml-auto text-xs opacity-60">Added</span>
@@ -184,20 +185,24 @@ function MissingSkillButton({ skill, onAdd }) {
       disabled={state === 'loading'}
       className={`group flex w-full items-center gap-2 rounded-xl border px-4 py-2.5 text-left text-sm font-medium transition-all
         ${state === 'loading'
-          ? 'cursor-wait border-dark-600 bg-dark-800/70 text-dark-400'
-          : 'cursor-pointer border-orange-200/35 bg-orange-200/10 text-orange-100 hover:border-orange-100/60 hover:bg-orange-200/20'
+          ? 'cursor-wait'
+          : 'cursor-pointer hover:border-amber-400/60 hover:bg-amber-200/20'
         }`}
+      style={state === 'loading'
+        ? { borderColor: 'rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }
+        : { borderColor: 'rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.1)', color: '#92400e' }
+      }
     >
       {state === 'loading' ? (
         <>
-          <span className="h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-dark-500 border-t-cyan-300" />
+          <span className="h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2" style={{ borderColor: 'rgba(0,0,0,0.15)', borderTopColor: '#3b82f6' }} />
           <span>Adding {skill}...</span>
         </>
       ) : (
         <>
-          <Plus className="h-4 w-4 flex-shrink-0 text-orange-100 transition-colors group-hover:text-orange-50" />
+          <Plus className="h-4 w-4 flex-shrink-0 transition-colors" style={{ color: '#92400e' }} />
           <span>{skill}</span>
-          <span className="ml-auto text-xs text-orange-100/80 opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="ml-auto text-xs opacity-0 transition-opacity group-hover:opacity-100" style={{ color: '#92400e' }}>
             Add to resume
           </span>
         </>

@@ -1,19 +1,18 @@
 /**
  * JDViewerPage — Phase 1
  * Two-mode page:
- *  - /jd/new    → paste JD form, calls createJD, redirects to /jd/:id
- *  - /jd/:id    → structured view of persisted JD with 4-field skill-gap breakdown
+ *  - /jd/new    → paste JD form; on submit shows results INLINE (no redirect)
+ *  - /jd/:id    → structured view of a previously-persisted JD
  */
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createJD, getJD } from '../api/jdApi';
 import { matchResumeToJD } from '../api/matchApi';
-import { Briefcase, Building, FileText, Sparkles, Zap, BarChart3, Mail } from 'lucide-react';
+import { Briefcase, Building, FileText, Sparkles, Zap, BarChart3, Mail, CheckCircle } from 'lucide-react';
 
 export default function JDViewerPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const isNew = !id || id === 'new';
 
   // Form state (new mode)
@@ -23,8 +22,11 @@ export default function JDViewerPage() {
   const [resumeId, setResumeId] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // View state (existing mode)
-  const [jd, setJd]       = useState(null);
+  // Inline result state — populated after successful createJD (stays on /jd/new)
+  const [inlineJD, setInlineJD] = useState(null);
+
+  // View state (existing /jd/:id mode)
+  const [jd, setJd]           = useState(null);
   const [loading, setLoading] = useState(!isNew);
   const [matching, setMatching] = useState(false);
 
@@ -42,6 +44,7 @@ export default function JDViewerPage() {
     }
   }, [id, isNew]);
 
+  /* ── Submit handler — stays on /jd/new, renders results inline ── */
   async function handleSubmit(e) {
     e.preventDefault();
     if (!rawText.trim()) { toast.error('Please paste a job description'); return; }
@@ -50,7 +53,7 @@ export default function JDViewerPage() {
       const res = await createJD({ rawText, title, company, resumeId: resumeId || undefined });
       const saved = res.data?.data?.jd;
       toast.success('Job description analyzed!');
-      navigate(`/jd/${saved._id}`);
+      setInlineJD(saved);  // ← render results in place, no navigate()
     } catch (err) {
       toast.error(err.response?.data?.message ?? 'Failed to analyze JD');
     } finally {
@@ -58,14 +61,23 @@ export default function JDViewerPage() {
     }
   }
 
-  async function handleMatch() {
+  /* ── Reset handler — clear results and show form again ── */
+  function handleReset() {
+    setInlineJD(null);
+    setRawText('');
+    setTitle('');
+    setCompany('');
+    setResumeId('');
+  }
+
+  /* ── Match handler (works in both inline result view and /jd/:id view) ── */
+  async function handleMatch(activeJD) {
     if (!resumeId) { toast.error('Select a resume to match against'); return; }
     setMatching(true);
     try {
-      const res = await matchResumeToJD(resumeId, jd._id);
+      const res = await matchResumeToJD(resumeId, activeJD._id);
       const match = res.data?.data?.match;
       toast.success(`Match complete! Score: ${match.overallScore}%`);
-      navigate(`/resume/${resumeId}`);
     } catch (err) {
       toast.error(err.response?.data?.message ?? 'Matching failed');
     } finally {
@@ -73,32 +85,48 @@ export default function JDViewerPage() {
     }
   }
 
-  /* ── New JD form ── */
+  /* ──────────────────────────────────────────────────────
+     NEW MODE — form OR inline results (never redirects)
+  ────────────────────────────────────────────────────── */
   if (isNew) {
+    /* Results panel — shown after analysis */
+    if (inlineJD) {
+      return (
+        <JDResultsView
+          jd={inlineJD}
+          resumeId={resumeId}
+          setResumeId={setResumeId}
+          storedResumes={storedResumes}
+          matching={matching}
+          onMatch={() => handleMatch(inlineJD)}
+          onReset={handleReset}
+          isInline
+        />
+      );
+    }
+
+    /* ── New JD form ── */
     const isEnabled = rawText.length >= 100;
     return (
-      <div className="min-h-screen p-6 md:p-12 max-w-4xl mx-auto space-y-8 animate-slide-up">
-        <header className="flex flex-col gap-2 pb-6 border-b border-dark-700/50">
-          <Link to="/dashboard" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors w-fit">← Dashboard</Link>
-        </header>
-
+      <div className="min-h-screen">
+        <div className="p-6 md:p-12 max-w-4xl mx-auto space-y-8 animate-slide-up">
         <section>
           <div className="flex items-center gap-3 mb-6">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-300 text-dark-950 font-bold text-sm">
+            <span style={{ display: 'flex', height: '2.5rem', width: '2.5rem', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'rgba(217,119,6,0.15)', color: '#d97706', fontSize: '1rem' }}>
               <Sparkles className="h-4 w-4" />
             </span>
-            <h2 className="font-display text-3xl font-semibold text-dark-50">Match Role Intelligence</h2>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em' }}>Match Role Intelligence</h2>
           </div>
-          <p className="text-dark-400 max-w-3xl mb-8">
-            Paste the job description you're targeting. We'll run a deep ATS analysis, suggest specific wording improvements, 
+          <p style={{ color: '#6b7280', maxWidth: '600px', lineHeight: 1.7, marginBottom: '2rem' }}>
+            Paste the job description you're targeting. We'll run a deep ATS analysis, suggest specific wording improvements,
             and draft a tailored cover letter based on your matched skills.
           </p>
-          
-          <div className="bg-dark-900/40 rounded-[2rem] border border-dark-700/50 p-1">
+
+          <div style={{ background: 'rgba(255,255,255,0.4)', borderRadius: '2rem', border: '1px solid rgba(0,0,0,0.06)', padding: '0.25rem' }}>
             <form className="panel-card rounded-[1.5rem] p-5 shadow-lg space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 text-sm font-medium text-dark-300 flex items-center gap-2">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', fontSize: '0.85rem', fontWeight: 600, color: '#4b5563' }}>
                     <Briefcase className="h-4 w-4" /> Job Title
                   </label>
                   <input
@@ -110,7 +138,7 @@ export default function JDViewerPage() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 text-sm font-medium text-dark-300 flex items-center gap-2">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', fontSize: '0.85rem', fontWeight: 600, color: '#4b5563' }}>
                     <Building className="h-4 w-4" /> Company
                   </label>
                   <input
@@ -125,7 +153,7 @@ export default function JDViewerPage() {
 
               {storedResumes.length > 0 && (
                 <div>
-                  <label className="mb-1 text-sm font-medium text-dark-300 flex items-center gap-2">
+                  <label className="mb-1 text-sm font-medium flex items-center gap-2" style={{ color: '#374151' }}>
                     Match against resume (optional)
                   </label>
                   <select
@@ -143,10 +171,10 @@ export default function JDViewerPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-sm font-medium text-dark-300 flex items-center gap-2">
+                  <label className="text-sm font-medium flex items-center gap-2" style={{ color: '#374151' }}>
                     <FileText className="h-4 w-4" /> Job Description
                   </label>
-                  <span className={`text-xs ${rawText.length < 100 && rawText.length > 0 ? 'text-amber-400' : 'text-dark-400'}`}>
+                  <span className="text-xs" style={{ color: rawText.length < 100 && rawText.length > 0 ? '#b45309' : '#6b7280' }}>
                     {rawText.length} chars
                   </span>
                 </div>
@@ -159,7 +187,7 @@ export default function JDViewerPage() {
                   required
                 />
                 {rawText.length > 0 && rawText.length < 100 && (
-                  <p className="mt-1 text-xs text-amber-400">Please enter at least 100 characters.</p>
+                  <p className="mt-1 text-xs" style={{ color: '#b45309' }}>Please enter at least 100 characters.</p>
                 )}
               </div>
 
@@ -168,9 +196,10 @@ export default function JDViewerPage() {
                 disabled={!isEnabled || submitting}
                 className={`w-full rounded-2xl py-3 font-medium flex items-center justify-center gap-2 transition-all mt-4 ${
                   !isEnabled || submitting
-                    ? 'bg-dark-700 text-dark-400 cursor-not-allowed'
+                    ? 'cursor-not-allowed'
                     : 'bg-gradient-to-r from-amber-300 via-orange-300 to-teal-300 text-dark-950 shadow-[0_16px_28px_-14px_rgba(251,146,60,0.72)] hover:-translate-y-0.5'
                 }`}
+                style={!isEnabled || submitting ? { background: 'rgba(0,0,0,0.06)', color: '#9ca3af' } : undefined}
               >
                 {submitting ? (
                   <span className="flex items-center gap-2">
@@ -186,77 +215,130 @@ export default function JDViewerPage() {
             </form>
           </div>
 
-          {/* ── Mock Empty Dashboard State ── */}
-          <div className="panel-card flex min-h-[400px] flex-col rounded-[1.5rem] p-5">
-            <div className="mb-5 flex w-full items-center gap-2 overflow-x-auto border-b border-dark-700 pb-4">
-              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all bg-dark-800/50 text-dark-300 opacity-70">
+          {/* ── Empty state preview ── */}
+          <div className="panel-card flex min-h-[200px] flex-col rounded-[1.5rem] p-5 mt-4">
+            <div className="mb-5 flex w-full items-center gap-2 overflow-x-auto pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all" style={{ background: 'rgba(0,0,0,0.04)', color: '#374151' }}>
                 <BarChart3 className="h-4 w-4" />
                 ATS Score
               </div>
-              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all text-dark-500">
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all" style={{ color: '#9ca3af' }}>
                 <Sparkles className="h-4 w-4" />
                 Enhancements
               </div>
-              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all text-dark-500">
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all" style={{ color: '#9ca3af' }}>
                 <Mail className="h-4 w-4" />
                 Cover Letter
               </div>
             </div>
-
             <div className="flex flex-1 flex-col items-center justify-center text-center animate-pulse">
-              <Zap className="h-10 w-10 text-dark-500 mb-4" />
-              <p className="text-dark-300">Paste a job description to unlock ATS compatibility score.</p>
+              <Zap className="h-10 w-10 mb-4" style={{ color: '#9ca3af' }} />
+              <p style={{ color: '#374151' }}>Paste a job description to unlock ATS compatibility score.</p>
             </div>
           </div>
         </section>
+        </div>
       </div>
     );
   }
 
-  /* ── View existing JD ── */
+  /* ──────────────────────────────────────────────────────
+     VIEW MODE — /jd/:id  (existing persisted JD)
+  ────────────────────────────────────────────────────── */
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading job description…</div>;
-  if (!jd) return <div className="min-h-screen flex items-center justify-center text-gray-400">Job description not found. <Link to="/dashboard" className="text-blue-400 ml-2">Go back</Link></div>;
+  if (!jd) return <div className="min-h-screen flex items-center justify-center text-gray-400">Job description not found. <Link to="/dashboard" className="text-blue-600 ml-2">Go back</Link></div>;
 
+  return (
+    <JDResultsView
+      jd={jd}
+      resumeId={resumeId}
+      setResumeId={setResumeId}
+      storedResumes={storedResumes}
+      matching={matching}
+      onMatch={() => handleMatch(jd)}
+      isInline={false}
+    />
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   JDResultsView — shared between inline (new) and view modes
+───────────────────────────────────────────────────────── */
+function JDResultsView({ jd, resumeId, setResumeId, storedResumes, matching, onMatch, onReset, isInline }) {
   const { extracted } = jd;
 
   return (
-    <div className="min-h-screen p-6 md:p-12 max-w-6xl mx-auto space-y-8">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/10">
+    <div className="min-h-screen">
+      <div className="p-6 md:p-12 max-w-6xl mx-auto space-y-8 animate-slide-up">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
         <div className="space-y-4">
-          <Link to="/dashboard" className="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1 w-fit">← Dashboard</Link>
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-2">{jd.title || 'Job Description'}</h1>
-            {jd.company && <p className="text-xl text-gray-400 mt-1">{jd.company}</p>}
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl font-bold" style={{ color: '#111827' }}>{jd.title || 'Job Description'}</h1>
+              {isInline && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 border border-emerald-500/25">
+                  <CheckCircle className="h-3.5 w-3.5" /> Analysis Complete
+                </span>
+              )}
+            </div>
+            {jd.company && <p className="text-xl mt-1" style={{ color: '#6b7280' }}>{jd.company}</p>}
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {isInline && (
+            <button
+              onClick={onReset}
+              className="btn-secondary text-sm"
+            >
+              ← Analyze Another JD
+            </button>
+          )}
+          {!isInline && (
+            <Link
+              to="/jd/new"
+              className="btn-secondary text-sm"
+            >
+              + Analyze New JD
+            </Link>
+          )}
         </div>
       </header>
 
       {/* ── Match action bar ── */}
       {storedResumes.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl shadow-lg">
-          <select className="w-full sm:flex-1 px-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500 transition-all appearance-none" value={resumeId} onChange={(e) => setResumeId(e.target.value)}>
+        <div className="panel-card flex flex-col sm:flex-row items-center gap-4 p-4">
+          <select
+            className="input-field w-full sm:flex-1 appearance-none"
+            value={resumeId}
+            onChange={(e) => setResumeId(e.target.value)}
+          >
             <option value="">Select resume to match…</option>
             {storedResumes.map((r) => (
               <option key={r.resumeId} value={r.resumeId}>{r.fileName}</option>
             ))}
           </select>
-          <button className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap" onClick={handleMatch} disabled={matching || !resumeId}>
+          <button
+            className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            onClick={onMatch}
+            disabled={matching || !resumeId}
+          >
             {matching ? 'Matching…' : '🎯 Run ATS Match'}
           </button>
         </div>
       )}
 
-      {/* ── Phase 6: turn detected gaps into an approval-gated roadmap / suggestions ── */}
+      {/* ── Phase 6: skill gaps → approval-gated roadmap / suggestions ── */}
       {(extracted?.skillsToImprove?.length ?? 0) > 0 && (
-        <div className="flex flex-col gap-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-amber-200/90">
+        <div className="flex flex-col gap-4 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm" style={{ color: '#92400e' }}>
             {extracted.skillsToImprove.length} skill gap
             {extracted.skillsToImprove.length !== 1 ? 's' : ''} detected for this role.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
               to={`/suggestions?jdId=${jd._id}${resumeId ? `&resumeId=${resumeId}` : ''}`}
-              className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+              className="btn-secondary text-sm"
             >
               🛠️ Improve resume
             </Link>
@@ -272,8 +354,8 @@ export default function JDViewerPage() {
 
       {/* ── Seniority badge ── */}
       {extracted?.seniority && extracted.seniority !== 'unspecified' && (
-        <div className="inline-flex items-center px-4 py-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl text-sm font-medium">
-          Level: <strong className="ml-1 text-purple-300">{extracted.seniority}</strong>
+        <div className="inline-flex items-center px-4 py-2 bg-purple-500/10 border border-purple-500/25 rounded-xl text-sm font-medium" style={{ color: '#6b21a8' }}>
+          Level: <strong className="ml-1" style={{ color: '#581c87' }}>{extracted.seniority}</strong>
         </div>
       )}
 
@@ -310,7 +392,7 @@ export default function JDViewerPage() {
 
       {/* Must-have / Nice-to-have */}
       {(extracted?.mustHave?.length > 0 || extracted?.niceToHave?.length > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6" style={{ borderTop: '1px solid rgba(0,0,0,0.07)' }}>
           {extracted?.mustHave?.length > 0 && (
             <SkillSection title="Must Have" icon="🔴" skills={extracted.mustHave} variant="red" />
           )}
@@ -319,17 +401,18 @@ export default function JDViewerPage() {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }
 
 function SkillSection({ title, icon, skills, variant, empty = 'None identified' }) {
   const styles = {
-    neutral: 'bg-white/5 border-white/10 text-gray-200 chip-bg-white/10 chip-text-gray-300',
-    green:   'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 chip-bg-emerald-500/10 chip-text-emerald-300',
-    amber:   'bg-amber-500/5 border-amber-500/20 text-amber-400 chip-bg-amber-500/10 chip-text-amber-300',
-    blue:    'bg-blue-500/5 border-blue-500/20 text-blue-400 chip-bg-blue-500/10 chip-text-blue-300',
-    red:     'bg-red-500/5 border-red-500/20 text-red-400 chip-bg-red-500/10 chip-text-red-300',
+    neutral: 'bg-black/5 border-black/10 text-gray-700 chip-bg-black/5 chip-text-gray-700',
+    green:   'bg-emerald-500/5 border-emerald-500/20 text-emerald-700 chip-bg-emerald-500/10 chip-text-emerald-700',
+    amber:   'bg-amber-500/5 border-amber-500/20 text-amber-700 chip-bg-amber-500/10 chip-text-amber-700',
+    blue:    'bg-blue-500/5 border-blue-500/20 text-blue-700 chip-bg-blue-500/10 chip-text-blue-700',
+    red:     'bg-red-500/5 border-red-500/20 text-red-700 chip-bg-red-500/10 chip-text-red-700',
   };
 
   const style = styles[variant];

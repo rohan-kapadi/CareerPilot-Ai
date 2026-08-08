@@ -93,19 +93,19 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-lg space-y-5 overflow-y-auto rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl"
+        className="panel-card-strong max-h-[90vh] w-full max-w-lg space-y-5 overflow-y-auto p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-xl font-semibold text-white">📤 Export resume</h3>
-            <p className="mt-1 text-sm text-gray-400">
+            <h3 className="text-xl font-semibold" style={{ color: '#111827' }}>📤 Export resume</h3>
+            <p className="mt-1 text-sm" style={{ color: '#6b7280' }}>
               Generated without AI — exactly what your resume says, nothing invented.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 transition-colors hover:text-white"
+            className="back-link"
             aria-label="Close export dialog"
           >
             ✕
@@ -113,14 +113,14 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
         </header>
 
         {loading ? (
-          <p className="py-8 text-center text-gray-400">Loading options…</p>
+          <p className="py-8 text-center" style={{ color: '#6b7280' }}>Loading options…</p>
         ) : (
           <>
             <TemplatePicker templates={templates} value={template} onChange={setTemplate} />
 
             {/* ── Format ── */}
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Format</p>
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Format</p>
               <div className="flex gap-3">
                 {FORMATS.map((f) => (
                   <button
@@ -129,8 +129,8 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
                     onClick={() => setFormat(f.key)}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${
                       format === f.key
-                        ? 'border-blue-500/50 bg-blue-500/10 text-blue-300'
-                        : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                        ? 'border-blue-500/50 bg-blue-500/10 text-blue-700'
+                        : 'border-black/10 bg-black/5 text-gray-600 hover:border-black/20'
                     }`}
                   >
                     {f.icon} {f.label}
@@ -138,7 +138,7 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
                 ))}
               </div>
               {format === 'docx' && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs" style={{ color: '#9ca3af' }}>
                   DOCX uses the fixed Word template — the template picker applies to PDF only.
                 </p>
               )}
@@ -146,18 +146,24 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
 
             {/* ── Redaction ── */}
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>
                 Redact before export
               </p>
               {flags.length === 0 ? (
-                <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-gray-400">
+                <p
+                  className="rounded-xl px-4 py-3 text-sm"
+                  style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }}
+                >
                   No sensitive fields flagged on this resume.
                 </p>
               ) : (
                 <ul className="space-y-2">
                   {flags.map((flag) => (
                     <li key={flag._id ?? flag.fieldPath}>
-                      <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors hover:bg-white/10">
+                      <label
+                        className="flex cursor-pointer items-center gap-3 rounded-xl px-4 py-2.5 transition-colors hover:bg-black/[0.04]"
+                        style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)' }}
+                      >
                         <input
                           type="checkbox"
                           checked={redactPaths.includes(flag.fieldPath)}
@@ -165,17 +171,17 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
                           className="h-4 w-4 accent-amber-500"
                         />
                         <span className="min-w-0 flex-1">
-                          <span className="block text-sm font-medium text-white">
+                          <span className="block text-sm font-medium" style={{ color: '#111827' }}>
                             {flag.flagType}
                           </span>
-                          <span className="font-mono text-xs text-gray-500">{flag.fieldPath}</span>
+                          <span className="font-mono text-xs" style={{ color: '#9ca3af' }}>{flag.fieldPath}</span>
                         </span>
                       </label>
                     </li>
                   ))}
                 </ul>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs" style={{ color: '#9ca3af' }}>
                 Redaction applies to this download only — your stored resume is unchanged.
               </p>
             </div>
@@ -186,12 +192,12 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
                 <button
                   onClick={handlePreview}
                   disabled={working}
-                  className="rounded-lg border border-blue-500/30 bg-blue-600/20 px-4 py-2 text-sm font-medium text-blue-300 transition-colors hover:bg-blue-600/30 disabled:opacity-50"
+                  className="rounded-lg border border-blue-500/30 bg-blue-600/20 px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-600/30 disabled:opacity-50"
                 >
                   {working ? 'Working…' : '👁 Preview redacted export'}
                 </button>
                 {preview && (
-                  <pre className="max-h-48 overflow-auto rounded-lg border border-white/5 bg-black/40 p-3 text-xs text-emerald-400">
+                  <pre className="draft-json max-h-48 overflow-y-auto text-emerald-700">
                     {JSON.stringify(preview.sections?.personalInfo ?? preview.sections, null, 2)}
                   </pre>
                 )}
@@ -199,10 +205,10 @@ export default function ExportModal({ resumeId, resumeName = 'Resume', onClose }
             )}
 
             {/* ── Actions ── */}
-            <footer className="flex justify-end gap-3 border-t border-white/10 pt-4">
+            <footer className="flex justify-end gap-3 pt-4" style={{ borderTop: '1px solid rgba(0,0,0,0.07)' }}>
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:text-white"
+                className="back-link px-4 py-2"
               >
                 Cancel
               </button>

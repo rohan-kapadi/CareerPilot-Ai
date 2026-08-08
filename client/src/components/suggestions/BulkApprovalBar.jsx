@@ -27,14 +27,14 @@ export default function BulkApprovalBar({
 
   if (count === 0) {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
-        <p className="text-sm text-gray-400">
+      <div className="panel-card flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+        <p className="text-sm" style={{ color: '#6b7280' }}>
           {totalPending} suggestion{totalPending !== 1 ? 's' : ''} awaiting your review
         </p>
         {totalPending > 0 && (
           <button
             onClick={onSelectAll}
-            className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-300"
+            className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-700"
           >
             Select all
           </button>
@@ -50,11 +50,11 @@ export default function BulkApprovalBar({
       }`}
     >
       <div className="min-w-0">
-        <p className="text-sm font-medium text-white">
+        <p className="text-sm font-medium" style={{ color: '#111827' }}>
           {count} suggestion{count !== 1 ? 's' : ''} selected
         </p>
         {armed && (
-          <p className="mt-0.5 text-xs text-amber-300">
+          <p className="mt-0.5 text-xs" style={{ color: '#92400e' }}>
             This applies {count} change{count !== 1 ? 's' : ''} to your resume. Tap again to confirm.
           </p>
         )}
@@ -66,7 +66,7 @@ export default function BulkApprovalBar({
             setArmed(false);
             onClearSelection();
           }}
-          className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
+          className="back-link"
         >
           Clear
         </button>
@@ -74,7 +74,7 @@ export default function BulkApprovalBar({
         {count < totalPending && (
           <button
             onClick={onSelectAll}
-            className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-300"
+            className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-700"
           >
             Select all
           </button>

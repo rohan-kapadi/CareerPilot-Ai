@@ -1,10 +1,7 @@
 /**
- * SettingsPage — Phase 8 (PROJECT.md §13.12)
- *
- * Holds DEFAULTS only. Per §13.12 these never override a per-memory choice the
- * user already made, and they never bypass an approval gate — the copy on this
- * page says so explicitly, because a settings screen that quietly weakened the
- * negotiation guarantees would undermine the whole product.
+ * SettingsPage — Phase 8
+ * Holds DEFAULTS only. These never override a per-memory choice the user
+ * already made, and they never bypass an approval gate.
  */
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,28 +9,16 @@ import toast from 'react-hot-toast';
 import api, { getUserProfile } from '../services/api';
 
 const TIMEBOX_OPTIONS = [
-  { key: 'session', label: 'This session only', hint: 'Forgotten when you close the tab' },
-  { key: '30d', label: '30 days', hint: 'Good default for an active job search' },
-  { key: '90d', label: '90 days', hint: 'For longer transitions' },
-  { key: 'long_term', label: 'Until I revoke it', hint: 'Persists until you forget it' },
+  { key: 'session',   label: 'This session only',  hint: 'Forgotten when you close the tab' },
+  { key: '30d',       label: '30 days',             hint: 'Good default for an active job search' },
+  { key: '90d',       label: '90 days',             hint: 'For longer transitions' },
+  { key: 'long_term', label: 'Until I revoke it',   hint: 'Persists until you forget it' },
 ];
 
 const TOGGLES = [
-  {
-    key: 'notifyExpiringMemories',
-    label: 'Notify me before a memory expires',
-    hint: 'A heads-up 3 days before, so nothing disappears silently.',
-  },
-  {
-    key: 'notifyPendingSuggestions',
-    label: 'Notify me about pending AI suggestions',
-    hint: 'When the AI has proposals waiting in your review queue.',
-  },
-  {
-    key: 'autoRedactFlaggedPII',
-    label: 'Pre-select flagged PII for redaction on export',
-    hint: 'Ticks the boxes in the export dialog — you still confirm before downloading.',
-  },
+  { key: 'notifyExpiringMemories',   label: 'Notify me before a memory expires',      hint: 'A heads-up 3 days before, so nothing disappears silently.' },
+  { key: 'notifyPendingSuggestions', label: 'Notify me about pending AI suggestions',  hint: 'When the AI has proposals waiting in your review queue.' },
+  { key: 'autoRedactFlaggedPII',     label: 'Pre-select flagged PII for redaction on export', hint: 'Ticks the boxes in the export dialog — you still confirm before downloading.' },
 ];
 
 const DEFAULTS = {
@@ -51,10 +36,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      navigate('/login');
-      return;
-    }
+    if (!localStorage.getItem('token')) { navigate('/login'); return; }
     getUserProfile()
       .then((res) => {
         const stored = res.data?.data?.settings;
@@ -79,111 +61,113 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-gray-400">
+      <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', color: '#6b7280' }}>
         Loading settings…
       </div>
     );
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-3xl space-y-10 p-6 md:p-12">
-      <header className="space-y-4 border-b border-white/10 pb-6">
-        <Link
-          to="/dashboard"
-          className="flex w-fit items-center gap-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
-        >
-          ← Dashboard
-        </Link>
-        <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold text-white">⚙️ Settings</h1>
-          <p className="mt-2 max-w-xl text-gray-400">
-            These set defaults for future decisions. They never change a memory you've already
-            timeboxed, and nothing here lets the AI skip asking you first.
+    <div style={{ minHeight: '100vh', fontFamily: "'Sora', system-ui, sans-serif" }}>
+      <main className="page-wrap py-10 space-y-8" style={{ maxWidth: '760px' }}>
+        {/* Header */}
+        <section>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>Settings</h1>
+          <p style={{ color: '#6b7280', lineHeight: 1.7, fontSize: '0.9rem', maxWidth: '520px' }}>
+            These set defaults for future decisions. They never change a memory you've already timeboxed,
+            and nothing here lets the AI skip asking you first.
           </p>
-        </div>
-      </header>
+        </section>
 
-      {/* ── Default memory timebox ── */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="font-semibold text-white/90">Default memory lifespan</h2>
-          <p className="mt-1 text-sm text-gray-400">
-            Pre-selected on new Memory Cards. You can still pick something different on any
-            individual card.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {TIMEBOX_OPTIONS.map((option) => {
-            const active = settings.defaultMemoryTimebox === option.key;
-            return (
-              <button
-                key={option.key}
-                onClick={() => save({ ...settings, defaultMemoryTimebox: option.key })}
-                disabled={saving}
-                className={`rounded-xl border p-4 text-left transition-all disabled:opacity-60 ${
-                  active
-                    ? 'border-blue-500/50 bg-blue-500/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20'
-                }`}
-              >
-                <span className={`block font-medium ${active ? 'text-blue-300' : 'text-white'}`}>
-                  {option.label}
-                </span>
-                <span className="mt-1 block text-xs text-gray-400">{option.hint}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+        <div style={{ height: '1px', background: 'rgba(0,0,0,0.07)' }} />
 
-      {/* ── Notifications & behaviour ── */}
-      <section className="space-y-4">
-        <h2 className="font-semibold text-white/90">Notifications & defaults</h2>
-        <ul className="space-y-3">
-          {TOGGLES.map((toggle) => (
-            <li key={toggle.key}>
-              <label className="flex cursor-pointer items-start gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
-                <input
-                  type="checkbox"
-                  checked={Boolean(settings[toggle.key])}
-                  onChange={(e) => save({ ...settings, [toggle.key]: e.target.checked })}
+        {/* Memory Timebox */}
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1rem', marginBottom: '0.25rem' }}>Default memory lifespan</h2>
+            <p style={{ color: '#6b7280', fontSize: '0.82rem' }}>
+              Pre-selected on new Memory Cards. You can still pick something different on any individual card.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {TIMEBOX_OPTIONS.map((option) => {
+              const active = settings.defaultMemoryTimebox === option.key;
+              return (
+                <button
+                  key={option.key}
+                  onClick={() => save({ ...settings, defaultMemoryTimebox: option.key })}
                   disabled={saving}
-                  className="mt-0.5 h-4 w-4 accent-blue-500"
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block font-medium text-white">{toggle.label}</span>
-                  <span className="mt-0.5 block text-xs text-gray-400">{toggle.hint}</span>
-                </span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      </section>
+                  className="panel-card text-left transition-all"
+                  style={{
+                    padding: '1rem',
+                    cursor: 'pointer',
+                    border: active ? '1.5px solid rgba(59,130,246,0.45)' : undefined,
+                    background: active ? 'rgba(59,130,246,0.07)' : undefined,
+                    opacity: saving ? 0.6 : 1,
+                  }}
+                >
+                  <span style={{ display: 'block', fontWeight: 600, color: active ? '#1d4ed8' : '#111827', fontSize: '0.9rem', marginBottom: '0.2rem' }}>{option.label}</span>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: '#9ca3af' }}>{option.hint}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-      {/* ── Cross-links ── */}
-      <section className="space-y-4">
-        <h2 className="font-semibold text-white/90">Your data</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Link
-            to="/memory"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
-          >
-            <span className="block font-medium text-white">🧠 Memory Dashboard</span>
-            <span className="mt-1 block text-xs text-gray-400">
-              Inspect, edit, forget anything the AI remembers
-            </span>
-          </Link>
-          <Link
-            to="/privacy"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
-          >
-            <span className="block font-medium text-white">🔒 Privacy Dashboard</span>
-            <span className="mt-1 block text-xs text-gray-400">
-              Consent per purpose, plus data export and deletion
-            </span>
-          </Link>
-        </div>
-      </section>
+        <div style={{ height: '1px', background: 'rgba(0,0,0,0.07)' }} />
+
+        {/* Notifications */}
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1rem' }}>Notifications &amp; defaults</h2>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', listStyle: 'none', padding: 0, margin: 0 }}>
+            {TOGGLES.map((toggle) => (
+              <li key={toggle.key}>
+                <label
+                  className="panel-card"
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1rem', cursor: 'pointer' }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={Boolean(settings[toggle.key])}
+                    onChange={(e) => save({ ...settings, [toggle.key]: e.target.checked })}
+                    disabled={saving}
+                    style={{ marginTop: '0.1rem', width: '1rem', height: '1rem', accentColor: '#3b82f6', flexShrink: 0 }}
+                  />
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: 'block', fontWeight: 600, color: '#111827', fontSize: '0.88rem', marginBottom: '0.15rem' }}>{toggle.label}</span>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#9ca3af' }}>{toggle.hint}</span>
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <div style={{ height: '1px', background: 'rgba(0,0,0,0.07)' }} />
+
+        {/* Cross-links */}
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1rem' }}>Your data</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {[
+              { to: '/memory',  icon: '🧠', label: 'Memory Dashboard',  sub: 'Inspect, edit, forget anything the AI remembers' },
+              { to: '/privacy', icon: '🔒', label: 'Privacy Dashboard', sub: 'Consent per purpose, plus data export and deletion' },
+            ].map(({ to, icon, label, sub }) => (
+              <Link
+                key={to}
+                to={to}
+                className="panel-card"
+                style={{ display: 'block', padding: '1rem', textDecoration: 'none', transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                <span style={{ display: 'block', fontWeight: 600, color: '#111827', fontSize: '0.9rem', marginBottom: '0.2rem' }}>{icon} {label}</span>
+                <span style={{ display: 'block', fontSize: '0.75rem', color: '#9ca3af' }}>{sub}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

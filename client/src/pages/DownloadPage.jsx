@@ -3,23 +3,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { exportDocx, exportPdf, exportEmail } from '../services/api';
 import toast from 'react-hot-toast';
 import {
-  ArrowLeft,
   CheckCircle2,
   Download,
   FileDown,
   FileText,
   Loader2,
-  LogOut,
   Mail,
   Sparkles,
 } from 'lucide-react';
 import {
-  clearSession,
   getAuthToken,
   getStoredUser,
   requireAuth,
 } from '../utils/auth';
-import ThemeToggle from '../components/ThemeToggle';
 
 export default function DownloadPage() {
   const { resumeId } = useParams();
@@ -102,8 +98,8 @@ export default function DownloadPage() {
       title: 'Download DOCX',
       description: 'Editable Word format for custom edits.',
       icon: FileText,
-      iconColor: 'text-amber-200',
-      hoverClass: 'hover:border-amber-200/45 hover:bg-amber-200/10',
+      iconColor: 'text-amber-600',
+      hoverClass: 'hover:border-amber-300/60 hover:bg-amber-200/15',
       loading: loadingDocx,
       onClick: handleDocx,
       disabled: false,
@@ -113,8 +109,8 @@ export default function DownloadPage() {
       title: 'Download PDF',
       description: 'Print-ready layout for direct applications.',
       icon: FileDown,
-      iconColor: 'text-orange-200',
-      hoverClass: 'hover:border-orange-200/45 hover:bg-orange-200/10',
+      iconColor: 'text-orange-600',
+      hoverClass: 'hover:border-orange-300/60 hover:bg-orange-200/15',
       loading: loadingPdf,
       onClick: handlePdf,
       disabled: false,
@@ -126,8 +122,8 @@ export default function DownloadPage() {
         ? `Sent to ${user.email}`
         : `Send both files to ${user.email || 'your account email'}`,
       icon: emailSent ? CheckCircle2 : Mail,
-      iconColor: 'text-teal-200',
-      hoverClass: 'hover:border-teal-300/45 hover:bg-teal-300/10',
+      iconColor: 'text-teal-600',
+      hoverClass: 'hover:border-teal-300/60 hover:bg-teal-200/15',
       loading: loadingEmail,
       onClick: handleEmail,
       disabled: emailSent,
@@ -136,37 +132,18 @@ export default function DownloadPage() {
 
   return (
     <div className="app-shell flex flex-col">
-      <header className="sticky top-0 z-50 border-b border-dark-700/70 bg-dark-950/80 backdrop-blur-xl">
-        <div className="page-wrap flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              id="back-to-editor-btn"
-              onClick={() => navigate(`/editor/${resumeId}`)}
-              className="btn-ghost flex items-center gap-2 px-3 py-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back to editor</span>
+      <header className="bg-white/75 backdrop-blur-md border-b border-black/5 z-40 py-2">
+        <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <button onClick={() => navigate(`/editor/${resumeId}`)} className="btn-ghost flex items-center gap-2 px-3 py-2">
+              <span className="hidden sm:inline">← Back to editor</span>
             </button>
             <div className="flex items-center gap-2">
               <div className="brand-mark h-9 w-9 rounded-xl">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <span className="font-display text-base font-semibold text-dark-100">Export Resume</span>
+              <span className="font-display text-base font-semibold" style={{ color: '#111827' }}>Export Resume</span>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <button
-              onClick={() => {
-                clearSession();
-                navigate('/login');
-              }}
-              className="btn-ghost flex items-center gap-2 px-3 py-2"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Sign Out</span>
-            </button>
           </div>
         </div>
       </header>
@@ -178,8 +155,8 @@ export default function DownloadPage() {
               <div className="brand-mark mx-auto h-16 w-16 rounded-2xl">
                 <Download className="h-8 w-8" />
               </div>
-              <h1 className="mt-4 font-display text-3xl font-semibold text-dark-50">Export your resume</h1>
-              <p className="mt-2 text-dark-300">
+              <h1 className="mt-4 font-display text-3xl font-semibold" style={{ color: '#111827' }}>Export your resume</h1>
+              <p className="mt-2" style={{ color: '#6b7280' }}>
                 Download polished files instantly or email them directly to your account.
               </p>
             </div>
@@ -193,26 +170,27 @@ export default function DownloadPage() {
                     id={action.id}
                     onClick={action.onClick}
                     disabled={action.loading || action.disabled}
-                    className={`group flex w-full items-center gap-4 rounded-2xl border border-dark-700/70 bg-dark-900/65 p-4 text-left transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 ${action.hoverClass}`}
+                    className={`group flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 ${action.hoverClass}`}
+                    style={{ borderColor: 'rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-dark-600/70 bg-dark-800/80">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border" style={{ borderColor: 'rgba(0,0,0,0.07)', background: 'rgba(255,255,255,0.7)' }}>
                       {action.loading ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-cyan-300" />
+                        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
                       ) : (
                         <Icon className={`h-5 w-5 ${action.iconColor}`} />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <h3 className="font-semibold text-dark-100">{action.title}</h3>
-                      <p className="text-sm text-dark-400">{action.description}</p>
+                      <h3 className="font-semibold" style={{ color: '#111827' }}>{action.title}</h3>
+                      <p className="text-sm" style={{ color: '#6b7280' }}>{action.description}</p>
                     </div>
-                    <ArrowLeft className="ml-auto h-4 w-4 rotate-180 text-dark-500 transition-transform group-hover:translate-x-0.5 group-hover:text-dark-200" />
+                    <ArrowLeft className="ml-auto h-4 w-4 rotate-180 transition-transform group-hover:translate-x-0.5" style={{ color: '#9ca3af' }} />
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-6 rounded-2xl border border-dark-700/70 bg-dark-900/55 px-4 py-3 text-sm text-dark-400">
+            <div className="mt-6 rounded-2xl px-4 py-3 text-sm" style={{ border: '1px solid rgba(0,0,0,0.07)', background: 'rgba(0,0,0,0.025)', color: '#6b7280' }}>
               Tip: Export after running ATS analysis to ensure your resume reflects the latest skill edits.
             </div>
           </section>

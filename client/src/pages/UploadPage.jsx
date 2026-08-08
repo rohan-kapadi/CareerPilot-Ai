@@ -8,15 +8,12 @@ import {
   CheckCircle2,
   FileText,
   FileType2,
-  LogOut,
   Shield,
   Sparkles,
   Upload,
 } from 'lucide-react';
-import ThemeToggle from '../components/ThemeToggle';
 import { JobAnalysisProvider } from '../context/JobAnalysisContext';
 import {
-  clearSession,
   getAuthToken,
   getDisplayName,
   getStoredUser,
@@ -104,49 +101,6 @@ export default function UploadPage() {
   return (
     <JobAnalysisProvider resumeId={parsedResume?.resumeId}>
       <div className="app-shell min-h-screen flex flex-col overflow-y-auto">
-        <header className="sticky top-0 z-50 border-b border-dark-700/70 bg-dark-950/75 backdrop-blur-xl">
-          <div className="page-wrap flex h-16 items-center justify-between">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-3"
-              aria-label="Go to dashboard"
-            >
-              <div className="brand-mark h-9 w-9 rounded-xl">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <div className="text-left">
-                <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Workspace</p>
-                <p className="font-display text-base font-semibold text-dark-50">CareerPilot AI</p>
-              </div>
-            </button>
-
-            <div className="flex items-center gap-2 sm:gap-3">
-              <ThemeToggle />
-              <button
-                id="profile-btn"
-                onClick={() => navigate('/profile')}
-                className="btn-secondary flex items-center gap-2 px-3 py-2"
-              >
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-400/10 text-xs font-semibold text-cyan-300">
-                  {userInitial}
-                </span>
-                <span className="hidden text-sm sm:inline">{userName}</span>
-              </button>
-              <button
-                id="logout-btn"
-                onClick={() => {
-                  clearSession();
-                  navigate('/login');
-                }}
-                className="btn-ghost flex items-center gap-2 px-3 py-2"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Sign Out</span>
-              </button>
-            </div>
-          </div>
-        </header>
-
         <main className="page-wrap py-8 space-y-12">
           {/* Step 1: Upload */}
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -156,32 +110,33 @@ export default function UploadPage() {
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-300 text-dark-950 font-bold text-sm">1</span>
                 <span className="section-kicker">Upload Source</span>
               </div>
-              <h1 className="font-display text-3xl font-semibold text-dark-50 sm:text-4xl">
+              <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
                 Start with your current resume.
               </h1>
-              <p className="mt-3 text-dark-300">
+              <p style={{ color: '#6b7280', maxWidth: '480px', lineHeight: 1.7 }}>
                 Drag and drop your latest file. We'll extract your history and skills for AI optimization.
               </p>
 
               <div
                 {...getRootProps()}
-                className={`mt-7 cursor-pointer rounded-3xl border border-dashed p-8 text-center transition-all duration-300
+                className={`mt-7 cursor-pointer rounded-3xl p-8 text-center transition-all duration-300
                   ${isDragActive
                     ? 'border-orange-200 bg-orange-200/10'
                     : file
                       ? 'border-emerald-400/60 bg-emerald-500/10'
-                      : 'border-dark-600/80 bg-dark-900/60 hover:border-orange-200/60 hover:bg-orange-200/5'
+                      : 'hover:bg-black/5'
                   }`}
+                style={{ border: isDragActive || file ? '1px dashed' : '1px dashed rgba(0,0,0,0.15)', background: isDragActive || file ? '' : 'rgba(0,0,0,0.02)' }}
               >
                 <input {...getInputProps()} />
                 <div className="flex flex-col items-center gap-3">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-dark-600/80 bg-dark-900/70">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl" style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)' }}>
                     {getFileIcon()}
                   </div>
                   {file ? (
-                    <p className="max-w-full truncate text-sm text-dark-200">{file.name}</p>
+                    <p className="max-w-full truncate text-sm" style={{ color: '#374151', fontWeight: 500 }}>{file.name}</p>
                   ) : (
-                    <p className="text-lg font-semibold text-dark-100">Drop PDF or DOCX</p>
+                    <p className="text-lg font-semibold" style={{ color: '#111827' }}>Drop PDF or DOCX</p>
                   )}
                 </div>
               </div>
@@ -211,8 +166,8 @@ export default function UploadPage() {
                   <div className="mb-5 flex items-center gap-3">
                     <CheckCircle2 className="h-6 w-6 text-emerald-400" />
                     <div>
-                      <h2 className="font-display text-xl font-semibold text-dark-50">Profile Ready</h2>
-                      <p className="text-sm text-dark-400">Basic extraction complete.</p>
+                      <h2 style={{ fontWeight: 700, color: '#111827' }}>Profile Ready</h2>
+                      <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>Basic extraction complete.</p>
                     </div>
                   </div>
                   <button
@@ -223,26 +178,26 @@ export default function UploadPage() {
                   </button>
                 </article>
               ) : (
-                <article className="panel-card p-6 border-dark-700/50 bg-dark-900/40">
-                  <h2 className="font-display text-xl font-semibold text-dark-50 mb-4">Quick Start Guide</h2>
-                  <ul className="space-y-4 text-sm text-dark-300">
+                <article className="panel-card p-6" style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.08)' }}>
+                  <h2 style={{ fontWeight: 700, color: '#111827', marginBottom: '1rem', fontSize: '1.05rem' }}>Quick Start Guide</h2>
+                  <ul className="space-y-4 text-sm" style={{ color: '#4b5563' }}>
                     <li className="flex gap-3">
-                      <span className="text-orange-200 font-bold">01</span>
+                      <span style={{ color: '#d97706', fontWeight: 800 }}>01</span>
                       <span>Upload your PDF or DOCX file first.</span>
                     </li>
                     <li className="flex gap-3">
-                      <span className="text-orange-200 font-bold">02</span>
+                      <span style={{ color: '#d97706', fontWeight: 800 }}>02</span>
                       <span>Enter the job description in the panel below.</span>
                     </li>
                     <li className="flex gap-3">
-                      <span className="text-orange-200 font-bold">03</span>
+                      <span style={{ color: '#d97706', fontWeight: 800 }}>03</span>
                       <span>Generate ATS insights and a custom cover letter.</span>
                     </li>
                   </ul>
                 </article>
               )}
-              <article className="panel-card p-5 border-dark-700/50 bg-dark-900/20">
-                <div className="flex items-center gap-3 text-dark-400 text-xs">
+              <article className="panel-card p-5" style={{ background: 'rgba(255,255,255,0.4)', border: '1px dashed rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center gap-3 text-xs" style={{ color: '#6b7280' }}>
                   <Shield className="h-4 w-4" />
                   Your data is encrypted and used only for your session.
                 </div>
@@ -251,8 +206,8 @@ export default function UploadPage() {
           </div>
 
 
-          <footer className="pt-12 pb-8 border-t border-dark-800 text-center text-dark-500 text-sm">
-            <p>&copy; 2026 CareerPilot AI — Premium Intelligence Suite</p>
+          <footer style={{ textAlign: 'center', padding: '2rem 1rem', color: '#9ca3af', fontSize: '0.78rem', borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: '2rem' }}>
+            &copy; 2026 CareerPilot AI — Premium Intelligence Suite
           </footer>
         </main>
       </div>

@@ -22,8 +22,8 @@ export function useExplanationTrace(matchId) {
         setMatch(m);
         setTrace(m?.explanationTrace || null);
       })
-      .catch(err => {
-        setError(err.response?.data?.message || 'Failed to load match trace');
+      .catch(() => {
+        setError('Failed to load match trace. It may no longer exist.');
       })
       .finally(() => setLoading(false));
   }, [matchId]);

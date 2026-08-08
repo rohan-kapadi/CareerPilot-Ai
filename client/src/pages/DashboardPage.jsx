@@ -10,8 +10,15 @@ import { listJDs } from '../api/jdApi';
 import { listMatches } from '../api/matchApi';
 import { listSuggestions } from '../api/suggestionApi';
 import { syncResumes } from '../utils/resumeStore';
-import { clearSession } from '../utils/auth';
 import MemoryDashboardWidget from '../components/memory/MemoryDashboardWidget';
+
+const QUICK_ACTIONS = [
+  { icon: '📄', label: 'Upload Resume',          sub: 'Parse and analyze a new resume',              path: '/upload' },
+  { icon: '✍️', label: 'Build with AI',           sub: 'Draft your resume section by section',        path: '/builder' },
+  { icon: '🔍', label: 'Analyze Job Description', sub: 'Extract skills and match to your resume',      path: '/jd/new' },
+  { icon: '👤', label: 'View Profile',            sub: 'Manage your career profile and skills',        path: '/profile' },
+  { icon: '🧠', label: 'Memory Hub',              sub: 'Inspect & negotiate AI memory',               path: '/memory' },
+];
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -45,217 +52,211 @@ export default function DashboardPage() {
       if (suggestionRes.status === 'fulfilled') {
         setPendingSuggestions(suggestionRes.value.data?.data?.suggestions ?? []);
       }
-
       setLoading(false);
     })();
   }, [navigate]);
 
-  function handleLogout() {
-    clearSession();
-    toast.success('Logged out');
-    navigate('/login');
-  }
+  const firstName = user.name?.split(' ')[0] ?? 'there';
 
   return (
-    <div className="min-h-screen p-6 md:p-12 max-w-7xl mx-auto space-y-12">
-      {/* ── Header ── */}
-      <header className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">🧭</span>
-          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">CareerPilot AI</span>
-        </div>
-        <nav className="flex flex-wrap items-center gap-2">
-          <Link to="/upload" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Upload Resume</Link>
-          <Link to="/jd/new" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Analyze JD</Link>
-          <Link to="/chat" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Career Chat</Link>
-          <Link to="/memory" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Memory</Link>
-          <Link to="/suggestions" className="relative px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">
-            Suggestions
-            {pendingSuggestions.length > 0 && (
-              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold border border-amber-500/30">
-                {pendingSuggestions.length}
-              </span>
-            )}
-          </Link>
-          <Link to="/privacy" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Privacy</Link>
-          <Link to="/profile" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Profile</Link>
-          <Link to="/settings" className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors font-medium text-sm">Settings</Link>
-          <button onClick={handleLogout} className="px-4 py-2 rounded-lg text-red-400 hover:text-white hover:bg-red-500/20 transition-colors font-medium text-sm border border-red-500/30">Logout</button>
-        </nav>
-      </header>
-
-      <main className="space-y-12">
+    <div style={{ minHeight: '100vh', fontFamily: "'Sora', system-ui, sans-serif", color: '#111827' }}>
+      <main className="page-wrap py-10 space-y-10">
         {/* ── Welcome ── */}
-        <section className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-white">
-            Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">{user.name?.split(' ')[0] ?? 'there'}</span> 👋
+        <section>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>
+            Welcome back, <span className="gradient-text">{firstName}</span> 👋
           </h1>
-          <p className="text-lg text-gray-400 max-w-2xl leading-relaxed">
+          <p style={{ color: '#6b7280', maxWidth: '560px', lineHeight: 1.7 }}>
             Your AI-powered career copilot. Everything the AI remembers about you is negotiated — nothing hidden.
           </p>
         </section>
 
         {/* ── Quick Actions ── */}
-        <section className="space-y-6">
-          <h2 className="text-xl font-semibold text-white/90">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all text-left group" onClick={() => navigate('/upload')}>
-              <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">📄</span>
-              <span className="font-semibold text-white mb-1">Upload Resume</span>
-              <span className="text-sm text-gray-400">Parse and analyze a new resume</span>
-            </button>
-            <button className="flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all text-left group" onClick={() => navigate('/builder')}>
-              <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">✍️</span>
-              <span className="font-semibold text-white mb-1">Build with AI</span>
-              <span className="text-sm text-gray-400">Draft your resume section by section</span>
-            </button>
-            <button className="flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all text-left group" onClick={() => navigate('/jd/new')}>
-              <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">🔍</span>
-              <span className="font-semibold text-white mb-1">Analyze Job Description</span>
-              <span className="text-sm text-gray-400">Extract skills and match to your resume</span>
-            </button>
-            <button className="flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all text-left group" onClick={() => navigate('/profile')}>
-              <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">👤</span>
-              <span className="font-semibold text-white mb-1">View Profile</span>
-              <span className="text-sm text-gray-400">Manage your career profile and skills</span>
-            </button>
-            <button className="flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all text-left group" onClick={() => navigate('/memory')}>
-              <span className="text-2xl mb-4 bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">🧠</span>
-              <span className="font-semibold text-white mb-1">Memory Hub</span>
-              <span className="text-sm text-gray-400">Inspect & negotiate AI memory</span>
-            </button>
+        <section>
+          <h2 style={{ fontSize: '0.75rem', fontWeight: 700, color: '#374151', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+            {QUICK_ACTIONS.map(({ icon, label, sub, path }) => (
+              <button
+                key={path}
+                onClick={() => navigate(path)}
+                className="panel-card text-left p-5 transition-all duration-200"
+                style={{ cursor: 'pointer', border: 'none' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.1)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = ''; }}
+              >
+                <span style={{ fontSize: '1.5rem', marginBottom: '0.75rem', background: 'rgba(0,0,0,0.05)', width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{icon}</span>
+                <span style={{ fontWeight: 700, color: '#111827', display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem' }}>{label}</span>
+                <span style={{ color: '#9ca3af', fontSize: '0.75rem', lineHeight: 1.5 }}>{sub}</span>
+              </button>
+            ))}
           </div>
         </section>
 
-        {/* ── Memory Dashboard Summary Widget ── */}
-        <section className="space-y-6">
+        {/* ── Memory Summary Widget ── */}
+        <section>
           <MemoryDashboardWidget />
         </section>
 
-        {/* ── Pending Approvals (Phase 6) ── */}
+        {/* ── Pending Approvals ── */}
         {pendingSuggestions.length > 0 && (
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white/90">Waiting for your approval</h2>
-              <Link to="/suggestions" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">Review all &rarr;</Link>
+          <section>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1.05rem' }}>Waiting for your approval</h2>
+              <Link to="/suggestions" style={{ fontSize: '0.8rem', color: '#1d4ed8', textDecoration: 'none', fontWeight: 600 }}>Review all →</Link>
             </div>
-            <div className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl space-y-4">
-              <p className="text-sm text-amber-200/90">
-                The AI has {pendingSuggestions.length} proposal{pendingSuggestions.length !== 1 ? 's' : ''} for you.
-                Nothing is applied to your resume until you approve it.
+            <div className="panel-card p-5" style={{ background: 'rgba(245,158,11,0.05)', borderColor: 'rgba(245,158,11,0.2)' }}>
+              <p style={{ fontSize: '0.85rem', color: '#92400e', marginBottom: '0.75rem' }}>
+                The AI has {pendingSuggestions.length} proposal{pendingSuggestions.length !== 1 ? 's' : ''} for you. Nothing is applied until you approve it.
               </p>
-              <ul className="space-y-2">
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {pendingSuggestions.slice(0, 3).map((s) => (
                   <li key={s._id}>
-                    <Link to="/suggestions" className="flex items-center gap-3 p-3 bg-black/20 border border-white/5 rounded-xl hover:bg-black/30 transition-colors">
-                      <span className="text-lg shrink-0">
-                        {s.suggestionType === 'roadmap' ? '🗺️' : s.suggestionType === 'skill_add' ? '⚡' : '✏️'}
-                      </span>
-                      <span className="flex-1 min-w-0 text-sm text-white truncate">{s.title}</span>
-                      <span className="shrink-0 text-xs text-gray-500">Review &rarr;</span>
+                    <Link to="/suggestions" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.6)', borderRadius: '0.9rem', border: '1px solid rgba(0,0,0,0.07)', textDecoration: 'none', color: '#111827', fontSize: '0.85rem' }}>
+                      <span>{s.suggestionType === 'roadmap' ? '🗺️' : s.suggestionType === 'skill_add' ? '⚡' : '✏️'}</span>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{s.title}</span>
+                      <span style={{ color: '#9ca3af', fontSize: '0.75rem', flexShrink: 0 }}>Review →</span>
                     </Link>
                   </li>
                 ))}
               </ul>
               {pendingSuggestions.length > 3 && (
-                <p className="text-xs text-gray-400">+{pendingSuggestions.length - 3} more in the review queue</p>
+                <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>+{pendingSuggestions.length - 3} more in the review queue</p>
               )}
             </div>
           </section>
         )}
 
         {/* ── Recent Resumes ── */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white/90">Recent Resumes</h2>
-            <Link to="/upload" className="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">Upload new &rarr;</Link>
+        <DataSection
+          title="Recent Resumes"
+          link={{ to: '/upload', label: 'Upload new →' }}
+          loading={loading}
+          empty={resumes.length === 0}
+          emptyIcon="📭"
+          emptyText={<>No resumes yet. <Link to="/upload" style={{ color: '#1d4ed8' }}>Upload your first resume →</Link></>}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {resumes.slice(0, 5).map((r, i) => (
+              <ResumeCard key={r.resumeId ?? i} item={r} onClick={() => navigate(`/resume/${r.resumeId}`)} />
+            ))}
           </div>
-          {loading ? (
-            <div className="flex flex-col items-center justify-center p-12 bg-white/5 border border-white/10 border-dashed rounded-2xl text-gray-400 space-y-4">Loading…</div>
-          ) : resumes.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-12 bg-white/5 border border-white/10 border-dashed rounded-2xl text-gray-400 space-y-4">
-              <span className="text-4xl opacity-50 mb-2">📭</span>
-              <p>No resumes yet. <Link to="/upload" className="text-blue-400 hover:underline">Upload your first resume &rarr;</Link></p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {resumes.slice(0, 5).map((r, i) => (
-                <div key={r.resumeId ?? i} className="flex items-center p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all cursor-pointer gap-4 group" onClick={() => navigate(`/resume/${r.resumeId}`)}>
-                  <span className="text-2xl bg-white/10 w-10 h-10 rounded-lg flex items-center justify-center shrink-0">📄</span>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-medium text-white truncate">{r.fileName ?? 'Resume'}</span>
-                    <span className="text-xs text-gray-400 truncate">Click to view</span>
-                  </div>
-                  {r.atsScore != null && (
-                    <span className={`px-2.5 py-1 text-xs font-medium rounded-full shrink-0 ${r.atsScore >= 70 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : r.atsScore >= 50 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                      {r.atsScore}%
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        </DataSection>
 
-        {/* ── Recent JDs ── */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white/90">Saved Job Descriptions</h2>
-            <Link to="/jd/new" className="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">Add new &rarr;</Link>
+        {/* ── Saved JDs ── */}
+        <DataSection
+          title="Saved Job Descriptions"
+          link={{ to: '/jd/new', label: 'Add new →' }}
+          loading={loading}
+          empty={jds.length === 0}
+          emptyIcon="📋"
+          emptyText={<>No job descriptions saved. <Link to="/jd/new" style={{ color: '#1d4ed8' }}>Analyze a JD →</Link></>}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {jds.slice(0, 5).map((jd) => (
+              <JDCard key={jd._id} item={jd} onClick={() => navigate(`/jd/${jd._id}`)} />
+            ))}
           </div>
-          {loading ? (
-            <div className="flex flex-col items-center justify-center p-12 bg-white/5 border border-white/10 border-dashed rounded-2xl text-gray-400 space-y-4">Loading…</div>
-          ) : jds.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-12 bg-white/5 border border-white/10 border-dashed rounded-2xl text-gray-400 space-y-4">
-              <span className="text-4xl opacity-50 mb-2">📋</span>
-              <p>No job descriptions saved. <Link to="/jd/new" className="text-blue-400 hover:underline">Analyze a JD &rarr;</Link></p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {jds.slice(0, 5).map((jd) => (
-                <div key={jd._id} className="flex items-center p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all cursor-pointer gap-4 group" onClick={() => navigate(`/jd/${jd._id}`)}>
-                  <span className="text-2xl bg-white/10 w-10 h-10 rounded-lg flex items-center justify-center shrink-0">💼</span>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-medium text-white truncate">{jd.title || 'Untitled Role'}</span>
-                    <span className="text-xs text-gray-400 truncate">{jd.company || 'Company not specified'}</span>
-                  </div>
-                  <span className="px-2.5 py-1 text-xs font-medium rounded-full shrink-0 bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                    {jd.extracted?.skillsToImprove?.length ?? 0} gaps
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        </DataSection>
 
         {/* ── Match History ── */}
-        {matches.length > 0 && (
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-white/90">Match History</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {matches.slice(0, 5).map((m) => (
-                <div key={m._id} className="flex items-center p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all cursor-pointer gap-4 group">
-                  <span className="text-2xl bg-white/10 w-10 h-10 rounded-lg flex items-center justify-center shrink-0">🎯</span>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-medium text-white truncate">{m.jdId?.title ?? 'Job Match'}</span>
-                    <span className="text-xs text-gray-400 truncate">{m.resumeId?.originalFileName ?? 'Resume'}</span>
-                  </div>
-                  <span className={`px-2.5 py-1 text-xs font-medium rounded-full shrink-0 ${m.overallScore >= 70 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : m.overallScore >= 50 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                    {m.overallScore}%
-                  </span>
-                  <button
-                    className="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-gray-300 border border-white/10 transition-colors"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/explain/${m._id}`); }}
-                    title="View explainable AI breakdown"
-                  >
-                    🔍 Why?
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        <DataSection
+          title="Match History"
+          loading={loading}
+          empty={matches.length === 0}
+          emptyIcon="🎯"
+          emptyText={<>No matches yet. <Link to="/jd/new" style={{ color: '#1d4ed8' }}>Analyze a Job Description →</Link></>}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {matches.slice(0, 6).map((m) => (
+              <MatchCard key={m._id} item={m} onClick={() => m.jdId?._id && navigate(`/jd/${m.jdId._id}`)} onExplain={() => navigate(`/explain/${m._id}`)} />
+            ))}
+          </div>
+        </DataSection>
       </main>
+
+      <footer style={{ textAlign: 'center', padding: '2rem 1rem', color: '#9ca3af', fontSize: '0.78rem', borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: '2rem' }}>
+        © 2026 CareerPilot AI — Premium Intelligence Suite
+      </footer>
     </div>
+  );
+}
+
+/* ── Helpers ── */
+function DataSection({ title, link, loading, empty, emptyIcon, emptyText, children }) {
+  return (
+    <section>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1.05rem' }}>{title}</h2>
+        {link && <Link to={link.to} style={{ fontSize: '0.8rem', color: '#1d4ed8', textDecoration: 'none', fontWeight: 600 }}>{link.label}</Link>}
+      </div>
+      {loading ? (
+        <EmptyState icon="⏳" text="Loading…" />
+      ) : empty ? (
+        <EmptyState icon={emptyIcon} text={emptyText} />
+      ) : children}
+    </section>
+  );
+}
+
+function EmptyState({ icon, text }) {
+  return (
+    <div className="panel-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', textAlign: 'center', gap: '0.75rem' }}>
+      <span style={{ fontSize: '2.5rem', opacity: 0.4 }}>{icon}</span>
+      <p style={{ color: '#9ca3af', fontSize: '0.85rem' }}>{text}</p>
+    </div>
+  );
+}
+
+function ScoreBadge({ score }) {
+  if (score == null) return null;
+  const color = score >= 70 ? { bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.3)', text: '#065f46' }
+             : score >= 50 ? { bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)', text: '#92400e' }
+             : { bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)', text: '#991b1b' };
+  return (
+    <span style={{ padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 700, background: color.bg, border: `1px solid ${color.border}`, color: color.text, flexShrink: 0 }}>
+      {score}%
+    </span>
+  );
+}
+
+function RowCard({ icon, title, sub, badge, children, onClick }) {
+  return (
+    <div
+      className="panel-card"
+      onClick={onClick}
+      style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.9rem 1rem', cursor: onClick ? 'pointer' : 'default', transition: 'all 0.15s' }}
+      onMouseEnter={e => { if (onClick) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.1)'; } }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = ''; }}
+    >
+      <span style={{ fontSize: '1.2rem', background: 'rgba(0,0,0,0.05)', width: '2.2rem', height: '2.2rem', borderRadius: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ fontWeight: 600, color: '#111827', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{title}</span>
+        {sub && <span style={{ color: '#9ca3af', fontSize: '0.73rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{sub}</span>}
+      </div>
+      {badge}
+      {children}
+    </div>
+  );
+}
+
+function ResumeCard({ item, onClick }) {
+  return <RowCard icon="📄" title={item.fileName ?? 'Resume'} sub="Click to view" badge={<ScoreBadge score={item.atsScore} />} onClick={onClick} />;
+}
+
+function JDCard({ item, onClick }) {
+  const gaps = item.extracted?.skillsToImprove?.length ?? 0;
+  return <RowCard icon="💼" title={item.title || 'Untitled Role'} sub={item.company || 'Company not specified'} badge={<span style={{ padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 700, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', color: '#1d4ed8', flexShrink: 0 }}>{gaps} gaps</span>} onClick={onClick} />;
+}
+
+function MatchCard({ item, onClick, onExplain }) {
+  return (
+    <RowCard icon="🎯" title={item.jdId?.title ?? 'Job Match'} sub={item.resumeId?.originalFileName ?? 'Resume'} badge={<ScoreBadge score={item.overallScore} />} onClick={onClick}>
+      <button
+        onClick={(e) => { e.stopPropagation(); onExplain(); }}
+        style={{ padding: '0.25rem 0.6rem', background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '0.5rem', fontSize: '0.72rem', fontWeight: 600, color: '#374151', cursor: 'pointer', flexShrink: 0 }}
+      >
+        🔍 Why?
+      </button>
+    </RowCard>
   );
 }

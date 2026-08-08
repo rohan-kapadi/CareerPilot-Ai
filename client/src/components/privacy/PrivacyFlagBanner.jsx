@@ -15,13 +15,13 @@ export default function PrivacyFlagBanner({ flags = [] }) {
       </div>
       <div className="flex-1">
         <h4 className="text-amber-400 font-medium mb-1">Sensitive Information Detected</h4>
-        <p className="text-gray-400 text-sm mb-3">
-          We noticed fields like {flags.map(f => f.flagType).join(', ')} in your profile. 
+        <p className="text-sm mb-3" style={{ color: '#6b7280' }}>
+          We noticed fields like {flags.map(f => f.flagType).join(', ')} in your profile.
           Modern resumes typically do not require this information.
         </p>
-        <Link 
+        <Link
           to="/privacy"
-          className="text-sm font-medium text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors"
+          className="text-sm font-medium text-amber-400 hover:text-amber-700 flex items-center gap-1 transition-colors"
         >
           Review Privacy Settings &rarr;
         </Link>

@@ -5,20 +5,20 @@ import ResumeEditor from '../components/ResumeEditor';
 import SkillsPanel from '../components/SkillsPanel';
 import ATSScoreCard from '../components/ATSScoreCard';
 import JobDashboard from '../components/JobSuite/JobDashboard';
-import ThemeToggle from '../components/ThemeToggle';
 import { JobAnalysisProvider } from '../context/JobAnalysisContext';
 import {
   ArrowLeft,
   Download,
   Loader2,
+  LogOut,
   Save,
   Sparkles,
 } from 'lucide-react';
 import {
+  clearSession,
   getAuthToken,
   getDisplayName,
   getStoredUser,
-  getUserInitial,
   requireAuth,
 } from '../utils/auth';
 
@@ -36,14 +36,13 @@ export default function EditorPage() {
 
   const user = getStoredUser();
   const userName = getDisplayName(user);
-  const userInitial = getUserInitial(user);
 
   if (loading) {
     return (
       <div className="app-shell flex items-center justify-center">
         <div className="panel-card flex items-center gap-3 px-5 py-4">
-          <Loader2 className="h-5 w-5 animate-spin text-cyan-300" />
-          <p className="text-sm text-dark-300">Loading your resume...</p>
+          <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+          <p className="text-sm" style={{ color: '#374151' }}>Loading your resume...</p>
         </div>
       </div>
     );
@@ -53,7 +52,7 @@ export default function EditorPage() {
     return (
       <div className="app-shell flex items-center justify-center px-6">
         <div className="panel-card w-full max-w-md p-6 text-center">
-          <p className="text-dark-300">Resume not found.</p>
+          <p style={{ color: '#374151' }}>Resume not found.</p>
           <button
             onClick={() => navigate('/dashboard')}
             className="btn-secondary mt-4"
@@ -67,8 +66,8 @@ export default function EditorPage() {
 
   return (
     <div className="app-shell flex flex-col">
-      <header className="sticky top-0 z-50 border-b border-dark-700/70 bg-dark-950/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6">
+      <header className="bg-white/75 backdrop-blur-md border-b border-black/5 z-40 py-2">
+        <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <button
               id="back-btn"
@@ -84,16 +83,15 @@ export default function EditorPage() {
                 <Sparkles className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="truncate font-display text-base font-semibold text-dark-50">
+                <p className="truncate font-display text-base font-semibold" style={{ color: '#111827' }}>
                   {resume.sections?.personalInfo?.name || resume.originalFileName}
                 </p>
-                <p className="truncate text-xs text-dark-400">Workspace owner: {userName}</p>
+                <p className="truncate text-xs" style={{ color: '#6b7280' }}>Workspace owner: {userName}</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <button
               id="save-nav-btn"
               onClick={() => saveNow(resume.sections)}
@@ -102,17 +100,6 @@ export default function EditorPage() {
             >
               <Save className={`h-4 w-4 ${saving ? 'animate-pulse' : ''}`} />
               <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
-            </button>
-
-            <button
-              id="profile-nav-btn"
-              onClick={() => navigate('/profile')}
-              className="btn-secondary flex items-center gap-2 px-3 py-2"
-            >
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-400/10 text-xs font-semibold text-cyan-300">
-                {userInitial}
-              </span>
-              <span className="hidden sm:inline">Profile</span>
             </button>
 
             <button
@@ -130,7 +117,7 @@ export default function EditorPage() {
       <main className="mx-auto grid w-full max-w-[1600px] flex-1 grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[1fr_380px] sm:px-6">
         <section className="space-y-4 animate-fade-in">
           {saving && (
-            <div className="pill border-orange-200/30 bg-orange-200/10 text-orange-100">
+            <div className="pill" style={{ borderColor: 'rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.1)', color: '#92400e' }}>
               Saving your latest changes...
             </div>
           )}

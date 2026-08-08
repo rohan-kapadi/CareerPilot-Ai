@@ -29,7 +29,7 @@ export default function SuggestionDiffCard({
   const { diff, explanationTrace, roadmap } = suggestion;
 
   return (
-    <article className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:border-white/20">
+    <article className="panel-card flex flex-col gap-4 p-5">
       {/* ── Header ── */}
       <header className="flex items-start gap-3">
         {onToggleSelect && (
@@ -50,9 +50,9 @@ export default function SuggestionDiffCard({
               <ConfidenceBadge confidence={explanationTrace.confidence} />
             )}
           </div>
-          <h3 className="font-semibold leading-snug text-white">{suggestion.title}</h3>
+          <h3 className="font-semibold leading-snug" style={{ color: '#111827' }}>{suggestion.title}</h3>
           {diff?.path && suggestion.suggestionType !== 'roadmap' && (
-            <p className="font-mono text-xs text-gray-500">{diff.path}</p>
+            <p className="font-mono text-xs" style={{ color: '#9ca3af' }}>{diff.path}</p>
           )}
         </div>
       </header>
@@ -74,7 +74,7 @@ export default function SuggestionDiffCard({
             {(Array.isArray(diff?.after) ? diff.after : []).map((skill) => (
               <span
                 key={skill}
-                className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-300"
+                className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-700"
               >
                 + {skill}
               </span>
@@ -91,17 +91,17 @@ export default function SuggestionDiffCard({
           </DiffLabel>
           <ol className="space-y-1.5">
             {(roadmap?.milestones ?? []).slice(0, 4).map((m, i) => (
-              <li key={i} className="flex gap-2 text-sm text-gray-300">
+              <li key={i} className="flex gap-2 text-sm" style={{ color: '#374151' }}>
                 <span className="shrink-0 font-mono text-xs text-purple-400">{i + 1}.</span>
                 <span>
                   {m.title}
-                  <span className="ml-2 text-xs text-gray-500">~{m.estimatedWeeks}w</span>
+                  <span className="ml-2 text-xs" style={{ color: '#9ca3af' }}>~{m.estimatedWeeks}w</span>
                 </span>
               </li>
             ))}
           </ol>
           {(roadmap?.courses?.length ?? 0) > 0 && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs" style={{ color: '#9ca3af' }}>
               Includes {roadmap.courses.length} recommended course
               {roadmap.courses.length !== 1 ? 's' : ''}
             </p>
@@ -113,7 +113,7 @@ export default function SuggestionDiffCard({
       <div>
         <button
           onClick={() => setShowWhy((v) => !v)}
-          className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-300"
+          className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-700"
         >
           {showWhy ? '▼ Hide reasoning' : '🔍 Why this suggestion?'}
         </button>
@@ -125,11 +125,11 @@ export default function SuggestionDiffCard({
       </div>
 
       {/* ── Decision ── */}
-      <footer className="flex items-center justify-end gap-3 border-t border-white/10 pt-4">
+      <footer className="flex items-center justify-end gap-3 pt-4" style={{ borderTop: '1px solid rgba(0,0,0,0.07)' }}>
         <button
           onClick={() => onReject(suggestion._id)}
           disabled={busy}
-          className="rounded-lg px-4 py-2 text-sm font-medium text-gray-400 transition-colors hover:text-white disabled:opacity-50"
+          className="back-link px-4 py-2 disabled:opacity-50"
         >
           Reject
         </button>
@@ -147,6 +147,6 @@ export default function SuggestionDiffCard({
 
 function DiffLabel({ children }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">{children}</p>
+    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>{children}</p>
   );
 }

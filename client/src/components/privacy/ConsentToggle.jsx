@@ -25,18 +25,18 @@ export default function ConsentToggle({ purpose, dataCategory, initialGranted = 
   };
 
   return (
-    <div className="flex items-start justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
+    <div className="panel-card flex items-start justify-between p-4 transition-colors">
       <div className="flex-1 pr-6">
-        <h4 className="text-white font-medium mb-1">{label}</h4>
-        <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
-        {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
+        <h4 className="font-medium mb-1" style={{ color: '#111827' }}>{label}</h4>
+        <p className="text-sm leading-relaxed" style={{ color: '#6b7280' }}>{description}</p>
+        {error && <p className="text-red-600 text-xs mt-2">{error}</p>}
       </div>
       <div className="flex items-center h-full pt-1">
         <button
           onClick={handleToggle}
           disabled={loading}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#1a1b26] ${
-            granted ? 'bg-blue-600' : 'bg-gray-600'
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+            granted ? 'bg-blue-600' : 'bg-gray-300'
           } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         >
           <span

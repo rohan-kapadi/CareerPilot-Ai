@@ -5,35 +5,30 @@ import ConsentToggle from '../components/privacy/ConsentToggle';
 import RedactionPreview from '../components/privacy/RedactionPreview';
 import { privacyApi } from '../api/privacyApi';
 
-export default function PrivacyDashboardPage() {
-  const [consents, setConsents] = useState([]);
-  const [flags, setFlags] = useState([]);
-  const [activeResume, setActiveResume] = useState(null);
-  const [loading, setLoading] = useState(true);
+const CATEGORY_PLURAL = { resume: 'Resumes', memory: 'Memories' };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+export default function PrivacyDashboardPage() {
+  const [consents, setConsents]       = useState([]);
+  const [flags, setFlags]             = useState([]);
+  const [activeResume, setActiveResume] = useState(null);
+  const [loading, setLoading]         = useState(true);
+
+  useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     try {
-      // 1. Fetch Resumes to get active one
-      const stored = localStorage.getItem('resumes');
+      const stored  = localStorage.getItem('resumes');
       const resumes = stored ? JSON.parse(stored) : [];
-      const resume = resumes[0];
+      const resume  = resumes[0];
       if (resume) {
         setActiveResume(resume);
-        // 2. Fetch Flags for this resume
         const f = await privacyApi.getFlags(resume._id);
         setFlags(f);
       }
-      
-      // 3. Fetch Consents
       const c = await privacyApi.getConsents();
       setConsents(c);
-      
-    } catch (error) {
-      console.error('Failed to load privacy dashboard data:', error);
+    } catch (err) {
+      console.error('Failed to load privacy data:', err);
     } finally {
       setLoading(false);
     }
@@ -48,127 +43,132 @@ export default function PrivacyDashboardPage() {
     try {
       const data = await privacyApi.exportData(category);
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
       a.href = url;
       a.download = `careerpilot_export_${category}.json`;
       a.click();
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Failed to export data.');
-    }
+    } catch { alert('Failed to export data.'); }
   };
 
   const handleDelete = async (category) => {
-    if (window.confirm(`Are you sure you want to delete all ${category} data? This is irreversible.`)) {
-      try {
-        await privacyApi.deleteDataCategory(category);
-        alert(`${category} data deleted successfully.`);
-        fetchData(); // Refresh UI
-      } catch (error) {
-        console.error('Delete failed:', error);
-        alert('Failed to delete data.');
-      }
-    }
+    if (!window.confirm(`Are you sure you want to delete all ${category} data? This is irreversible.`)) return;
+    try {
+      await privacyApi.deleteDataCategory(category);
+      alert(`${category} data deleted successfully.`);
+      fetchData();
+    } catch { alert('Failed to delete data.'); }
   };
 
   if (loading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '2rem', height: '2rem', border: '3px solid rgba(59,130,246,0.3)', borderTop: '3px solid #3b82f6', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 md:p-12 space-y-12">
-      {/* Header */}
-      <div>
-        <Link
-          to="/dashboard"
-          className="mb-6 flex w-fit items-center gap-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
-        >
-          ← Dashboard
-        </Link>
-        <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
-          <Shield className="w-6 h-6 text-blue-400" />
-        </div>
-        <h1 className="text-3xl font-semibold text-white mb-2">Privacy & Consent</h1>
-        <p className="text-gray-400 max-w-2xl text-lg leading-relaxed">
-          You own your career data. Control what the AI remembers, preview redactions before exporting, and manage your data footprint.
-        </p>
-      </div>
-
-      {/* Consent Toggles */}
-      <section className="space-y-6">
-        <h2 className="text-xl font-medium text-white flex items-center gap-2">
-          AI Capabilities & Permissions
-        </h2>
-        <div className="grid gap-4">
-          <ConsentToggle 
-            purpose="chat_memory"
-            dataCategory="sensitive_memory"
-            initialGranted={getConsentStatus('chat_memory', 'sensitive_memory')}
-            label="Allow AI to remember sensitive details"
-            description="If the AI detects sensitive info (like compensation or layoff history) during a chat, it will ask before remembering it."
-          />
-          <ConsentToggle 
-            purpose="scoring"
-            dataCategory="resume"
-            initialGranted={getConsentStatus('scoring', 'resume')}
-            label="Use data for ATS Score benchmarking"
-            description="Allows your anonymized score metrics to improve the overarching ATS engine accuracy."
-          />
-        </div>
-      </section>
-
-      {/* Redaction Area */}
-      {activeResume && (
-        <section className="space-y-6">
-          <h2 className="text-xl font-medium text-white flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-gray-400" />
-            Export Redaction
-          </h2>
-          <RedactionPreview resumeId={activeResume._id} flags={flags} />
+    <div style={{ minHeight: '100vh', fontFamily: "'Sora', system-ui, sans-serif", color: '#111827' }}>
+      <main className="page-wrap py-10 space-y-10" style={{ maxWidth: '880px' }}>
+        {/* Header */}
+        <section>
+          <div style={{ width: '3rem', height: '3rem', background: 'rgba(59,130,246,0.1)', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem', border: '1px solid rgba(59,130,246,0.2)' }}>
+            <Shield style={{ width: '1.35rem', height: '1.35rem', color: '#1d4ed8' }} />
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>Privacy &amp; Consent</h1>
+          <p style={{ color: '#6b7280', lineHeight: 1.7, fontSize: '0.9rem', maxWidth: '560px' }}>
+            You own your career data. Control what the AI remembers, preview redactions before exporting, and manage your data footprint.
+          </p>
         </section>
-      )}
 
-      {/* Data Export & Deletion */}
-      <section className="space-y-6 pt-6 border-t border-white/5">
-        <h2 className="text-xl font-medium text-white">Your Data Footprint</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Export Card */}
-          <div className="p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-white/20 transition-colors">
-            <Download className="w-6 h-6 text-gray-400 mb-4" />
-            <h3 className="text-white font-medium mb-1">Download your data</h3>
-            <p className="text-gray-400 text-sm mb-6">Get a copy of everything you've saved or the AI has learned about you.</p>
-            <div className="flex gap-3">
-              <button onClick={() => handleExport('resume')} className="text-sm px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-white border border-white/10 transition-colors">
-                Resumes
-              </button>
-              <button onClick={() => handleExport('memory')} className="text-sm px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-white border border-white/10 transition-colors">
-                Memories
-              </button>
+        <div style={{ height: '1px', background: 'rgba(0,0,0,0.07)' }} />
+
+        {/* Consent Toggles */}
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1rem' }}>AI Capabilities &amp; Permissions</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <ConsentToggle
+              purpose="chat_memory"
+              dataCategory="sensitive_memory"
+              initialGranted={getConsentStatus('chat_memory', 'sensitive_memory')}
+              label="Allow AI to remember sensitive details"
+              description="If the AI detects sensitive info (like compensation or layoff history) during a chat, it will ask before remembering it."
+            />
+            <ConsentToggle
+              purpose="scoring"
+              dataCategory="resume"
+              initialGranted={getConsentStatus('scoring', 'resume')}
+              label="Use data for ATS Score benchmarking"
+              description="Allows your anonymized score metrics to improve the overarching ATS engine accuracy."
+            />
+          </div>
+        </section>
+
+        {/* Redaction Preview */}
+        {activeResume && (
+          <>
+            <div style={{ height: '1px', background: 'rgba(0,0,0,0.07)' }} />
+            <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ShieldAlert style={{ width: '1rem', height: '1rem', color: '#6b7280' }} />
+                Export Redaction
+              </h2>
+              <RedactionPreview resumeId={activeResume._id} flags={flags} />
+            </section>
+          </>
+        )}
+
+        <div style={{ height: '1px', background: 'rgba(0,0,0,0.07)' }} />
+
+        {/* Data Footprint */}
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <h2 style={{ fontWeight: 700, color: '#111827', fontSize: '1rem' }}>Your Data Footprint</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Export */}
+            <div className="panel-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <Download style={{ width: '1.35rem', height: '1.35rem', color: '#6b7280' }} />
+              <div>
+                <h3 style={{ fontWeight: 700, color: '#111827', fontSize: '0.95rem', marginBottom: '0.3rem' }}>Download your data</h3>
+                <p style={{ color: '#9ca3af', fontSize: '0.78rem', lineHeight: 1.6 }}>Get a copy of everything you've saved or the AI has learned about you.</p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
+                {['resume', 'memory'].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => handleExport(cat)}
+                    className="btn-secondary"
+                    style={{ fontSize: '0.78rem', padding: '0.4rem 0.9rem' }}
+                  >
+                    {CATEGORY_PLURAL[cat]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Delete */}
+            <div className="panel-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderColor: 'rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.03)' }}>
+              <Trash2 style={{ width: '1.35rem', height: '1.35rem', color: '#dc2626' }} />
+              <div>
+                <h3 style={{ fontWeight: 700, color: '#111827', fontSize: '0.95rem', marginBottom: '0.3rem' }}>Delete your data</h3>
+                <p style={{ color: '#dc2626', fontSize: '0.78rem', lineHeight: 1.6, opacity: 0.75 }}>Permanently wipe your data from our servers. This action cannot be undone.</p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
+                {['resume', 'memory'].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => handleDelete(cat)}
+                    style={{ padding: '0.4rem 0.9rem', borderRadius: '999px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#991b1b', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.78rem', fontWeight: 600 }}
+                  >
+                    {CATEGORY_PLURAL[cat]}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Delete Card */}
-          <div className="p-6 bg-red-500/5 border border-red-500/10 rounded-2xl hover:border-red-500/20 transition-colors">
-            <Trash2 className="w-6 h-6 text-red-400 mb-4" />
-            <h3 className="text-white font-medium mb-1">Delete your data</h3>
-            <p className="text-red-400/70 text-sm mb-6">Permanently wipe your data from our servers. This action cannot be undone.</p>
-            <div className="flex gap-3">
-              <button onClick={() => handleDelete('resume')} className="text-sm px-4 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 border border-red-500/20 transition-colors">
-                Resumes
-              </button>
-              <button onClick={() => handleDelete('memory')} className="text-sm px-4 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 border border-red-500/20 transition-colors">
-                Memories
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
+        </section>
+      </main>
     </div>
   );
 }

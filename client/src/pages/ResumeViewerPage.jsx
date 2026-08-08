@@ -80,18 +80,25 @@ export default function ResumeViewerPage() {
   const { personalInfo, summary, experience = [], education = [], skills = [], projects = [], certifications = [] } = sections ?? {};
 
   return (
-    <div className="resume-viewer">
-      {/* ── Header ── */}
-      <header className="page-header">
-        <Link to="/dashboard" className="back-link">← Dashboard</Link>
-        <div className="page-header__actions">
-          <button className="btn btn--ghost" onClick={() => navigate(`/editor/${id}`)}>✏️ Edit</button>
-          <button className="btn btn--ghost" onClick={() => navigate(`/suggestions?resumeId=${id}`)}>🛠️ Suggestions</button>
-          <button className="btn btn--ghost" onClick={() => setShowExport(true)}>⬇️ Export</button>
-          <button className="btn btn--primary" onClick={() => navigate('/jd/new')}>🔍 Analyze JD</button>
+    <div>
+      <header className="bg-white/75 backdrop-blur-md border-b border-black/5 z-40 py-2">
+        <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6 overflow-x-auto">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3 flex-shrink-0">
+            <button onClick={() => navigate('/dashboard')} className="btn-ghost flex items-center gap-2 px-3 py-2">
+              <span className="hidden sm:inline">← Dashboard</span>
+            </button>
+            <span className="font-display text-base font-semibold" style={{ color: '#111827' }}>📄 Resume</span>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button className="btn btn--ghost" onClick={() => navigate(`/editor/${id}`)}>✏️ Edit</button>
+            <button className="btn btn--ghost" onClick={() => navigate(`/suggestions?resumeId=${id}`)}>🛠️ Suggestions</button>
+            <button className="btn btn--ghost" onClick={() => setShowExport(true)}>⬇️ Export</button>
+            <button className="btn btn--primary" onClick={() => navigate('/jd/new')}>🔍 Analyze JD</button>
+          </div>
         </div>
       </header>
 
+      <div className="resume-viewer">
       {/* ── Score overlay ── */}
       {atsScore != null && (
         <div className={`score-overlay ${atsScore >= 70 ? 'score--green' : atsScore >= 50 ? 'score--amber' : 'score--red'}`}>
@@ -224,16 +231,16 @@ export default function ResumeViewerPage() {
       </div>
 
       {/* ── Phase 7: Version history & comparison ── */}
-      <div className="mx-auto mt-12 max-w-4xl space-y-6 px-4 pb-12">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+      <div className="mx-auto mt-4 max-w-4xl space-y-6 pb-12">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <div>
-            <h2 className="text-xl font-semibold text-white">🕐 Version History</h2>
-            <p className="mt-1 text-sm text-gray-400">
+            <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>🕐 Version History</h2>
+            <p className="mt-1 text-sm" style={{ color: '#6b7280' }}>
               Every approved change is recorded. Select two versions to compare them.
             </p>
           </div>
           {currentVersion != null && (
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-gray-300">
+            <span className="pill">
               Current: v{currentVersion}
             </span>
           )}
@@ -260,6 +267,7 @@ export default function ResumeViewerPage() {
           onClose={() => setShowExport(false)}
         />
       )}
+      </div>
     </div>
   );
 }

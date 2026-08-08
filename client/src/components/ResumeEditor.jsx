@@ -32,7 +32,8 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
     onUpdateSection(sectionKey, list);
   };
 
-  const removeItem = (sectionKey, index) => {
+  const removeItem = (sectionKey, index, label) => {
+    if (!window.confirm(`Remove this ${label}? This can't be undone unless you leave without saving.`)) return;
     onUpdateSection(
       sectionKey,
       toArray(sections[sectionKey]).filter((_, i) => i !== index)
@@ -49,7 +50,7 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {PERSONAL_FIELDS.map((field) => (
             <div key={field}>
-              <label className="block text-xs font-medium text-dark-400 mb-1 uppercase tracking-wider">
+              <label className="block text-xs font-medium mb-1 uppercase tracking-wider" style={{ color: '#6b7280' }}>
                 {formatLabel(field)}
               </label>
               <input
@@ -96,7 +97,7 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
         }
       >
         {experience.length === 0 ? (
-          <p className="rounded-2xl border border-dark-700/70 bg-dark-900/60 px-4 py-5 text-sm text-dark-400">
+          <p className="rounded-2xl px-4 py-5 text-sm" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }}>
             Add experience entries to showcase your professional impact.
           </p>
         ) : (
@@ -104,7 +105,7 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
             const bullets = Array.isArray(exp?.bullets) && exp.bullets.length > 0 ? exp.bullets : [''];
 
             return (
-              <div key={`${exp.company || 'experience'}-${i}`} className="space-y-3 rounded-2xl border border-dark-700/70 bg-dark-900/60 p-4">
+              <div key={`${exp.company || 'experience'}-${i}`} className="space-y-3 rounded-2xl p-4" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)' }}>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                   <input
                     className="input-field text-sm"
@@ -127,10 +128,10 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs text-dark-400 uppercase tracking-wider">Bullet Points</label>
+                  <label className="text-xs uppercase tracking-wider" style={{ color: '#6b7280' }}>Bullet Points</label>
                   {bullets.map((bullet, j) => (
                     <div key={`bullet-${i}-${j}`} className="flex gap-2">
-                      <span className="mt-2.5 text-sm text-dark-500">•</span>
+                      <span className="mt-2.5 text-sm" style={{ color: '#9ca3af' }}>•</span>
                       <input
                         className="input-field flex-1 text-sm"
                         value={bullet}
@@ -147,7 +148,7 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
                   ))}
                   <button
                     type="button"
-                    className="text-xs text-cyan-300 transition-colors hover:text-cyan-200"
+                    className="text-xs text-blue-600 transition-colors hover:text-blue-700"
                     onClick={() => {
                       const list = [...experience];
                       list[i] = { ...list[i], bullets: [...bullets, ''] };
@@ -160,8 +161,8 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
 
                 <button
                   type="button"
-                  className="text-xs text-red-300/80 transition-colors hover:text-red-200"
-                  onClick={() => removeItem('experience', i)}
+                  className="text-xs text-red-600 transition-colors hover:text-red-700"
+                  onClick={() => removeItem('experience', i, 'experience entry')}
                 >
                   Remove this experience
                 </button>
@@ -183,12 +184,12 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
         }
       >
         {education.length === 0 ? (
-          <p className="rounded-2xl border border-dark-700/70 bg-dark-900/60 px-4 py-5 text-sm text-dark-400">
+          <p className="rounded-2xl px-4 py-5 text-sm" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }}>
             Add education details to strengthen your resume context.
           </p>
         ) : (
           education.map((edu, i) => (
-            <div key={`${edu.institution || 'education'}-${i}`} className="rounded-2xl border border-dark-700/70 bg-dark-900/60 p-4">
+            <div key={`${edu.institution || 'education'}-${i}`} className="rounded-2xl p-4" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)' }}>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <input
                   className="input-field text-sm"
@@ -217,8 +218,8 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
               </div>
               <button
                 type="button"
-                className="mt-3 text-xs text-red-300/80 transition-colors hover:text-red-200"
-                onClick={() => removeItem('education', i)}
+                className="mt-3 text-xs text-red-600 transition-colors hover:text-red-700"
+                onClick={() => removeItem('education', i, 'education entry')}
               >
                 Remove
               </button>
@@ -239,12 +240,12 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
         }
       >
         {projects.length === 0 ? (
-          <p className="rounded-2xl border border-dark-700/70 bg-dark-900/60 px-4 py-5 text-sm text-dark-400">
+          <p className="rounded-2xl px-4 py-5 text-sm" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }}>
             Add projects to highlight practical skills and measurable outcomes.
           </p>
         ) : (
           projects.map((proj, i) => (
-            <div key={`${proj.name || 'project'}-${i}`} className="space-y-3 rounded-2xl border border-dark-700/70 bg-dark-900/60 p-4">
+            <div key={`${proj.name || 'project'}-${i}`} className="space-y-3 rounded-2xl p-4" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)' }}>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <input
                   className="input-field text-sm"
@@ -281,8 +282,8 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
               />
               <button
                 type="button"
-                className="text-xs text-red-300/80 transition-colors hover:text-red-200"
-                onClick={() => removeItem('projects', i)}
+                className="text-xs text-red-600 transition-colors hover:text-red-700"
+                onClick={() => removeItem('projects', i, 'project')}
               >
                 Remove
               </button>
@@ -300,7 +301,7 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
         }
       >
         {certifications.length === 0 ? (
-          <p className="rounded-2xl border border-dark-700/70 bg-dark-900/60 px-4 py-5 text-sm text-dark-400">
+          <p className="rounded-2xl px-4 py-5 text-sm" style={{ border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', color: '#6b7280' }}>
             Add certifications to strengthen credibility for specialized roles.
           </p>
         ) : (
@@ -318,7 +319,8 @@ export default function ResumeEditor({ sections, onUpdateSection }) {
               />
               <button
                 type="button"
-                className="rounded-lg border border-dark-600/80 bg-dark-800/70 px-2 py-1 text-red-300/80 transition-colors hover:border-red-300/40 hover:bg-red-500/10 hover:text-red-200"
+                className="rounded-lg px-2 py-1 text-red-600 transition-colors hover:border-red-300/50 hover:bg-red-500/10 hover:text-red-700"
+                style={{ border: '1px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.03)' }}
                 onClick={() => {
                   onUpdateSection(
                     'certifications',

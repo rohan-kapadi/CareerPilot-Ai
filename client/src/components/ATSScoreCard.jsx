@@ -41,9 +41,9 @@ export default function ATSScoreCard({
   }, [atsScore]);
 
   const getScoreColor = (score) => {
-    if (score >= 75) return { text: 'text-green-400', ring: 'stroke-green-400', bg: 'bg-green-400' };
-    if (score >= 50) return { text: 'text-yellow-400', ring: 'stroke-yellow-400', bg: 'bg-yellow-400' };
-    return { text: 'text-red-400', ring: 'stroke-red-400', bg: 'bg-red-400' };
+    if (score >= 75) return { text: 'text-green-600', ring: 'stroke-green-500', bg: 'bg-green-500' };
+    if (score >= 50) return { text: 'text-amber-600', ring: 'stroke-amber-500', bg: 'bg-amber-500' };
+    return { text: 'text-red-600', ring: 'stroke-red-500', bg: 'bg-red-500' };
   };
 
   const getScoreLabel = (score) => {
@@ -64,14 +64,14 @@ export default function ATSScoreCard({
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="border-b border-dark-700/60 p-5">
+      <div className="p-5" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10">
-            <Target className="h-5 w-5 text-cyan-300" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-400/30 bg-blue-400/10">
+            <Target className="h-5 w-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-dark-100">ATS Score</h3>
-            <p className="text-xs text-dark-400">Analyze the role description to score alignment.</p>
+            <h3 className="font-semibold" style={{ color: '#111827' }}>ATS Score</h3>
+            <p className="text-xs" style={{ color: '#6b7280' }}>Analyze the role description to score alignment.</p>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function ATSScoreCard({
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="8"
-                  className="text-dark-700"
+                  style={{ color: 'rgba(0,0,0,0.08)' }}
                 />
                 <circle
                   cx="60"
@@ -107,7 +107,7 @@ export default function ATSScoreCard({
                 <span className={`text-4xl font-bold ${scoreColor.text}`}>
                   {animatedScore}
                 </span>
-                <span className="text-dark-500 text-xs uppercase tracking-[0.16em]">
+                <span className="text-xs uppercase tracking-[0.16em]" style={{ color: '#9ca3af' }}>
                   ATS Score
                 </span>
               </div>
@@ -122,16 +122,16 @@ export default function ATSScoreCard({
             </p>
             <div className="mb-6 grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-green-400/20 bg-green-500/10 p-3 text-center">
-                <p className="text-2xl font-bold text-green-300">
+                <p className="text-2xl font-bold text-green-600">
                   {matchedSkills?.length || 0}
                 </p>
-                <p className="text-xs text-dark-400">Matched</p>
+                <p className="text-xs" style={{ color: '#6b7280' }}>Matched</p>
               </div>
               <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-center">
-                <p className="text-2xl font-bold text-red-300">
+                <p className="text-2xl font-bold text-red-600">
                   {missingSkills?.length || 0}
                 </p>
-                <p className="text-xs text-dark-400">Missing</p>
+                <p className="text-xs" style={{ color: '#6b7280' }}>Missing</p>
               </div>
             </div>
           </>
@@ -139,10 +139,10 @@ export default function ATSScoreCard({
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium uppercase tracking-[0.16em] text-dark-400">
+            <label className="text-xs font-medium uppercase tracking-[0.16em]" style={{ color: '#6b7280' }}>
               Job Description
             </label>
-            <span className="text-xs text-dark-500">{jobDescription.trim().length} chars</span>
+            <span className="text-xs" style={{ color: '#9ca3af' }}>{jobDescription.trim().length} chars</span>
           </div>
           <textarea
             id="job-description-textarea"

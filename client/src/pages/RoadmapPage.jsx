@@ -1,12 +1,7 @@
 /**
  * RoadmapPage — Phase 6
- *
- * Hosts the Learning Roadmap for a skill gap (PROJECT.md §6.7). Reached from a
- * skill-gap chip in the match results, so the roadmap always has a traceable
- * origin rather than appearing out of nowhere.
- *
- * :skillGapId is a JobDescription id or a URL-encoded skill name — the server
- * resolves both (see roadmapController).
+ * Hosts the Learning Roadmap for a skill gap. Reached from a skill-gap chip
+ * in the match results, so the roadmap always has a traceable origin.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -21,10 +16,10 @@ const VIEWS = ['Timeline', 'Dependency Graph'];
 export default function RoadmapPage() {
   const { skillGapId } = useParams();
   const [roadmaps, setRoadmaps] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]   = useState(true);
   const [generating, setGenerating] = useState(false);
   const [deciding, setDeciding] = useState(null);
-  const [view, setView] = useState('Timeline');
+  const [view, setView]         = useState('Timeline');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -38,9 +33,7 @@ export default function RoadmapPage() {
     }
   }, [skillGapId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   async function handleGenerate() {
     setGenerating(true);
@@ -63,9 +56,7 @@ export default function RoadmapPage() {
       await load();
     } catch (err) {
       toast.error(err.response?.data?.message ?? 'Failed to start roadmap');
-    } finally {
-      setDeciding(null);
-    }
+    } finally { setDeciding(null); }
   }
 
   async function handleReject(id) {
@@ -76,59 +67,56 @@ export default function RoadmapPage() {
       await load();
     } catch (err) {
       toast.error(err.response?.data?.message ?? 'Failed to dismiss roadmap');
-    } finally {
-      setDeciding(null);
-    }
+    } finally { setDeciding(null); }
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-5xl space-y-8 p-6 md:p-12">
-      <header className="space-y-4 border-b border-white/10 pb-6">
-        <Link
-          to="/dashboard"
-          className="flex w-fit items-center gap-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
-        >
-          ← Dashboard
-        </Link>
-        <div className="flex flex-wrap items-end justify-between gap-4">
+    <div style={{ minHeight: '100vh', fontFamily: "'Sora', system-ui, sans-serif", color: '#111827' }}>
+      <main className="page-wrap py-10 space-y-8" style={{ maxWidth: '900px' }}>
+        {/* Header */}
+        <section style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
           <div>
-            <h1 className="flex items-center gap-2 text-3xl font-bold text-white">
-              🗺️ Learning Roadmap
-            </h1>
-            <p className="mt-2 max-w-xl text-gray-400">
-              Every milestone links back to the skill gap that triggered it. Nothing starts until you
-              approve it.
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>Learning Roadmap</h1>
+            <p style={{ color: '#6b7280', fontSize: '0.9rem', lineHeight: 1.7, maxWidth: '480px' }}>
+              Every milestone links back to the skill gap that triggered it. Nothing starts until you approve it.
             </p>
           </div>
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+            className="btn-primary"
+            style={{ opacity: generating ? 0.6 : 1 }}
           >
             {generating ? 'Building…' : roadmaps.length ? '↻ Regenerate' : '✨ Build roadmap'}
           </button>
-        </div>
-      </header>
+        </section>
 
-      {roadmaps.length > 1 && (
-        <div className="flex w-fit rounded-xl border border-white/10 bg-white/5 p-1">
-          {VIEWS.map((v) => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-all ${
-                view === v ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {v === 'Timeline' ? '📅' : '🕸'} {v}
-            </button>
-          ))}
-        </div>
-      )}
+        {/* View switcher */}
+        {roadmaps.length > 1 && (
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.6)', borderRadius: '0.75rem', border: '1px solid rgba(0,0,0,0.08)', padding: '0.2rem', width: 'fit-content' }}>
+            {VIEWS.map(v => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '0.35rem',
+                  padding: '0.35rem 0.85rem', borderRadius: '0.55rem', fontSize: '0.8rem', fontWeight: 500,
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+                  background: view === v ? 'rgba(255,255,255,0.9)' : 'transparent',
+                  border: 'none',
+                  color: view === v ? '#111827' : '#6b7280',
+                  boxShadow: view === v ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                }}
+              >
+                {v === 'Timeline' ? '📅' : '🕸'} {v}
+              </button>
+            ))}
+          </div>
+        )}
 
-      <main className="min-h-[300px]">
+        {/* Main content */}
         {loading ? (
-          <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 p-16 text-gray-400">
+          <div className="panel-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem', color: '#9ca3af', fontSize: '0.9rem' }}>
             Loading roadmap…
           </div>
         ) : view === 'Timeline' || roadmaps.length <= 1 ? (
@@ -139,7 +127,7 @@ export default function RoadmapPage() {
             deciding={deciding}
           />
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+          <div className="panel-card" style={{ padding: '1.5rem' }}>
             <SkillDependencyGraph roadmaps={roadmaps} />
           </div>
         )}
