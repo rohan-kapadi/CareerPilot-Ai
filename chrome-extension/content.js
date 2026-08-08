@@ -135,15 +135,17 @@
 
   function setBadge(card, count) {
     const badge = getOrCreateBadge(card);
+    // Deep text shades: these badges sit on the host site's (light) job cards,
+    // where the old 400-weight colors were close to unreadable.
     if (count === 0) {
       badge.textContent = '✗ 0 skill matches';
-      badge.style.background = 'rgba(239,68,68,0.12)';
-      badge.style.color = '#f87171';
-      badge.style.border = '1px solid rgba(239,68,68,0.3)';
+      badge.style.background = 'rgba(239,68,68,0.08)';
+      badge.style.color = '#991b1b';
+      badge.style.border = '1px solid rgba(239,68,68,0.25)';
     } else {
       badge.textContent = `✓ ${count} skill match${count !== 1 ? 'es' : ''}`;
-      badge.style.background = count >= 3 ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.12)';
-      badge.style.color = count >= 3 ? '#34d399' : '#fbbf24';
+      badge.style.background = count >= 3 ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)';
+      badge.style.color = count >= 3 ? '#065f46' : '#92400e';
       badge.style.border = count >= 3
         ? '1px solid rgba(16,185,129,0.3)'
         : '1px solid rgba(245,158,11,0.3)';
@@ -237,12 +239,13 @@
       gap: 8px;
       padding: 10px 14px;
       margin-bottom: 12px;
-      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.95));
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      border-radius: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(0, 0, 0, 0.07);
+      border-radius: 14px;
+      font-family: 'Sora', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #111827;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(20px);
       position: relative;
       z-index: 9999;
       width: 100%;
@@ -262,7 +265,7 @@
     label.style.cssText = `
       font-size: 13px;
       font-weight: 700;
-      color: #38bdf8;
+      color: #1d4ed8;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       display: flex;
@@ -273,7 +276,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
       </svg>
-      Resume AI
+      CareerPilot AI
     `;
 
     // Skill count badge
@@ -281,18 +284,17 @@
     skillBadge.style.cssText = `
       font-size: 11px;
       font-weight: 500;
-      color: #cbd5e1;
-      background: rgba(248, 250, 252, 0.08);
-      border: 1px solid rgba(248, 250, 252, 0.1);
-      border-radius: 20px;
+      color: #374151;
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 999px;
       padding: 3px 10px;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
     `;
     skillBadge.textContent = userSkills.length + ' skills';
 
     // Divider
     const divider = document.createElement('div');
-    divider.style.cssText = 'width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 4px;';
+    divider.style.cssText = 'width: 1px; height: 20px; background: rgba(0,0,0,0.1); margin: 0 4px;';
 
     // Filter toggle button
     const filterBtn = document.createElement('button');
@@ -305,9 +307,9 @@
       font-size: 13px;
       font-weight: 600;
       border-radius: 8px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      background: rgba(56, 189, 248, 0.1);
-      color: #bae6fd;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      background: rgba(59, 130, 246, 0.1);
+      color: #1d4ed8;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       font-family: inherit;
@@ -319,12 +321,12 @@
 
     filterBtn.addEventListener('mouseenter', () => {
       filterBtn.style.transform = 'translateY(-1px)';
-      filterBtn.style.background = filterActive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(56, 189, 248, 0.2)';
-      filterBtn.style.boxShadow = filterActive ? '0 4px 12px rgba(16, 185, 129, 0.15)' : '0 4px 12px rgba(56, 189, 248, 0.15)';
+      filterBtn.style.background = filterActive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(59, 130, 246, 0.2)';
+      filterBtn.style.boxShadow = filterActive ? '0 4px 12px rgba(16, 185, 129, 0.15)' : '0 4px 12px rgba(59, 130, 246, 0.15)';
     });
     filterBtn.addEventListener('mouseleave', () => {
       filterBtn.style.transform = 'translateY(0)';
-      filterBtn.style.background = filterActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.1)';
+      filterBtn.style.background = filterActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(59, 130, 246, 0.1)';
       filterBtn.style.boxShadow = 'none';
     });
     filterBtn.addEventListener('click', (e) => {
@@ -334,12 +336,12 @@
       if (filterActive) {
         filterBtn.style.background = 'rgba(16, 185, 129, 0.15)';
         filterBtn.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-        filterBtn.style.color = '#6ee7b7';
+        filterBtn.style.color = '#065f46';
         filterBtn.innerHTML = filterActiveHTML;
       } else {
-        filterBtn.style.background = 'rgba(56, 189, 248, 0.1)';
-        filterBtn.style.borderColor = 'rgba(56, 189, 248, 0.3)';
-        filterBtn.style.color = '#bae6fd';
+        filterBtn.style.background = 'rgba(59, 130, 246, 0.1)';
+        filterBtn.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+        filterBtn.style.color = '#1d4ed8';
         filterBtn.innerHTML = filterDefaultHTML;
       }
       applyFilterAndSort();
@@ -358,7 +360,7 @@
       border-radius: 8px;
       border: 1px solid rgba(167, 139, 250, 0.3);
       background: rgba(167, 139, 250, 0.1);
-      color: #ddd6fe;
+      color: #6b21a8;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       font-family: inherit;
@@ -380,11 +382,11 @@
       e.preventDefault();
       applyFilterAndSort();
       sortBtn.style.background = 'rgba(16, 185, 129, 0.2)';
-      sortBtn.style.color = '#6ee7b7';
+      sortBtn.style.color = '#065f46';
       sortBtn.style.borderColor = 'rgba(16, 185, 129, 0.4)';
       setTimeout(() => {
         sortBtn.style.background = 'rgba(167, 139, 250, 0.1)';
-        sortBtn.style.color = '#ddd6fe';
+        sortBtn.style.color = '#6b21a8';
         sortBtn.style.borderColor = 'rgba(167, 139, 250, 0.3)';
       }, 1000);
     });
@@ -399,21 +401,21 @@
       width: 32px;
       height: 32px;
       border-radius: 8px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      background: rgba(255, 255, 255, 0.03);
-      color: #94a3b8;
+      border: 1px solid rgba(0, 0, 0, 0.09);
+      background: rgba(0, 0, 0, 0.03);
+      color: #6b7280;
       cursor: pointer;
       transition: all 0.2s ease;
       outline: none;
     `;
     refreshBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>';
     refreshBtn.addEventListener('mouseenter', () => {
-       refreshBtn.style.background = 'rgba(255, 255, 255, 0.08)';
-       refreshBtn.style.color = '#e2e8f0';
+       refreshBtn.style.background = 'rgba(0, 0, 0, 0.06)';
+       refreshBtn.style.color = '#111827';
     });
     refreshBtn.addEventListener('mouseleave', () => {
-       refreshBtn.style.background = 'rgba(255, 255, 255, 0.03)';
-       refreshBtn.style.color = '#94a3b8';
+       refreshBtn.style.background = 'rgba(0, 0, 0, 0.03)';
+       refreshBtn.style.color = '#6b7280';
     });
     refreshBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -423,12 +425,12 @@
         svg.style.transition = 'transform 0.4s ease';
         svg.style.transform = 'rotate(180deg)';
       }
-      refreshBtn.style.color = '#38bdf8';
+      refreshBtn.style.color = '#3b82f6';
       loadUserSkills(() => {
         applyFilterAndSort();
         skillBadge.textContent = userSkills.length + ' skills';
         setTimeout(() => { 
-          refreshBtn.style.color = '#94a3b8'; 
+          refreshBtn.style.color = '#6b7280'; 
           if (svg) svg.style.transform = 'rotate(0deg)';
         }, 800);
       });

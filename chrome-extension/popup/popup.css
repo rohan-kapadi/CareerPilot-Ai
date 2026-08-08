@@ -1,20 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+/* ─────────────────────────────────────────────────────────────
+   CareerPilot AI — extension popup
+
+   Mirrors the web app's light "sand" design system (client/src/index.css)
+   so the extension reads as the same product. Token names and values are
+   kept identical to the app's :root block on purpose — if the app's palette
+   moves, the same find/replace applies here.
+   ───────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap');
 
 :root {
-  --bg-0: #050d1f;
-  --bg-1: #0a162f;
-  --bg-2: #0f1f3c;
-  --card: rgba(8, 20, 42, 0.72);
-  --card-strong: rgba(9, 25, 52, 0.88);
-  --border: rgba(148, 163, 184, 0.2);
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --cyan: #22d3ee;
-  --blue: #3b82f6;
-  --green: #34d399;
-  --red: #f87171;
-  --amber: #fbbf24;
+  /* Text — same scale as the app */
+  --text-primary:   #111827;
+  --text-secondary: #374151;
+  --text-muted:     #6b7280;
+  --text-faint:     #9ca3af;
+
+  /* Surfaces */
+  --card-bg:     rgba(255, 255, 255, 0.88);
+  --card-strong: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(0, 0, 0, 0.07);
+  --card-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
+
+  /* Inputs */
+  --input-bg:     rgba(255, 255, 255, 0.75);
+  --input-border: rgba(0, 0, 0, 0.1);
+
+  /* Chrome */
+  --bar-bg:  rgba(245, 237, 224, 0.82);
+  --btn-dark-bg: #1f2937;
+
+  /* Accents — darkened for legibility on a light ground */
+  --blue:  #3b82f6;
+  --blue-deep: #1d4ed8;
+  --amber: #f59e0b;
+  --amber-deep: #b45309;
+  --green: #10b981;
+  --green-deep: #059669;
+  --red:   #ef4444;
+  --red-deep: #dc2626;
 }
 
 * {
@@ -26,17 +49,17 @@
 body {
   width: 380px;
   min-height: 520px;
-  font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  font-family: 'Sora', system-ui, -apple-system, sans-serif;
   color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
   background:
-    radial-gradient(circle at 18% 8%, rgba(56, 189, 248, 0.18), transparent 36%),
-    radial-gradient(circle at 95% 4%, rgba(59, 130, 246, 0.24), transparent 32%),
-    linear-gradient(158deg, var(--bg-0) 0%, var(--bg-1) 48%, var(--bg-2) 100%);
+    radial-gradient(circle at 8%  12%, rgba(251, 191, 36, 0.18), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(59, 130, 246, 0.12), transparent 32%),
+    radial-gradient(circle at 50% 95%, rgba(20, 184, 166, 0.10), transparent 36%),
+    linear-gradient(155deg, #f5ede0 0%, #ede8df 40%, #e4ddd3 70%, #ddd6ca 100%);
 }
 
-.popup-shell {
-  min-height: 520px;
-}
+.popup-shell { min-height: 520px; }
 
 .view {
   min-height: 520px;
@@ -44,20 +67,20 @@ body {
   flex-direction: column;
 }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
+/* ── Top bar (mirrors .app-navbar) ── */
 .topbar {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 14px 14px 12px;
-  border-bottom: 1px solid var(--border);
-  background: var(--card-strong);
-  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--card-border);
+  background: var(--bar-bg);
+  backdrop-filter: blur(20px);
 }
 
+/* ── Brand mark (mirrors .brand-mark: amber → blue) ── */
 .brand-mark {
   width: 34px;
   height: 34px;
@@ -67,45 +90,49 @@ body {
   justify-content: center;
   font-size: 16px;
   font-weight: 700;
-  color: #052132;
-  background: linear-gradient(135deg, var(--blue), var(--cyan), #34d399);
-  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.25);
+  color: #ffffff;
+  background: linear-gradient(135deg, #f59e0b, #3b82f6);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+  flex-shrink: 0;
 }
 
 .eyebrow {
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--cyan);
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  color: var(--blue-deep);
 }
 
 .topbar h1 {
-  font-family: 'Space Grotesk', 'Manrope', sans-serif;
+  font-family: 'Outfit', 'Sora', sans-serif;
   font-size: 15px;
   font-weight: 700;
   line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
-.topbar-copy {
-  flex: 1;
-}
+.topbar-copy { flex: 1; min-width: 0; }
 
 .logout-btn {
   margin-left: auto;
   width: 30px;
   height: 30px;
   border-radius: 10px;
-  border: 1px solid var(--border);
-  background: rgba(15, 23, 42, 0.6);
-  color: var(--text-secondary);
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .logout-btn:hover {
-  border-color: rgba(248, 113, 113, 0.55);
-  color: var(--red);
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--red-deep);
 }
 
 .content {
@@ -116,25 +143,26 @@ body {
   gap: 10px;
 }
 
+/* ── Cards (mirrors .panel-card) ── */
 .card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   border-radius: 14px;
-  background: var(--card);
+  background: var(--card-bg);
   padding: 12px;
-  backdrop-filter: blur(12px);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(20px);
 }
 
-.card.compact {
-  padding: 10px;
-}
+.card.compact { padding: 10px; }
 
 .intro-text {
   margin: 4px 2px 2px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.55;
 }
 
+/* ── Form (mirrors .input-field) ── */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -142,53 +170,86 @@ body {
 }
 
 .field-label {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   margin-top: 2px;
 }
 
 .auth-form input {
-  border: 1px solid var(--border);
-  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
   color: var(--text-primary);
   border-radius: 11px;
   padding: 9px 11px;
   font-size: 13px;
+  font-family: inherit;
   outline: none;
-  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.auth-form input::placeholder {
-  color: var(--text-muted);
-}
+.auth-form input::placeholder { color: var(--text-faint); }
 
 .auth-form input:focus {
-  border-color: rgba(34, 211, 238, 0.6);
-  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.14);
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
+/* ── Buttons (mirror .btn-primary / .btn-secondary) ── */
 .primary-btn {
-  border: 1px solid rgba(125, 211, 252, 0.38);
-  background: linear-gradient(135deg, var(--blue), var(--cyan));
-  color: #04202f;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 700;
+  border: none;
+  background: var(--btn-dark-bg);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-weight: 600;
   font-size: 13px;
   cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.primary-btn:hover {
+.primary-btn:hover:not(:disabled) {
+  background: #111827;
   transform: translateY(-1px);
-  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .primary-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary action — previously only existed as inline styles on the
+   "Generate Tailored PDF" button, with no matching class in this file. */
+.secondary-btn {
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.12);
+  color: #92400e;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.secondary-btn:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.2);
+  transform: translateY(-1px);
+}
+
+.secondary-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
   transform: none;
 }
 
@@ -205,13 +266,24 @@ body {
   line-height: 1;
 }
 
+/* Keyboard focus — matches the app's blue focus ring */
+.primary-btn:focus-visible,
+.secondary-btn:focus-visible,
+.logout-btn:focus-visible,
+.chip-missing:focus-visible,
+.skills-title:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+}
+
 .error {
   min-height: 16px;
-  color: var(--red);
+  color: var(--red-deep);
   font-size: 11px;
   text-align: center;
 }
 
+/* ── Score ── */
 .score-card {
   display: flex;
   flex-direction: column;
@@ -233,13 +305,13 @@ body {
 
 .score-bg {
   fill: none;
-  stroke: rgba(148, 163, 184, 0.3);
+  stroke: rgba(0, 0, 0, 0.08);
   stroke-width: 8;
 }
 
 .score-ring {
   fill: none;
-  stroke: var(--cyan);
+  stroke: var(--blue);
   stroke-width: 8;
   stroke-linecap: round;
   stroke-dasharray: 339.292;
@@ -253,17 +325,22 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'Outfit', 'Sora', sans-serif;
   font-size: 27px;
   font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
 }
 
 .score-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--text-faint);
 }
 
+/* ── Section headings ── */
 .section-title {
   font-size: 11px;
   text-transform: uppercase;
@@ -271,11 +348,12 @@ body {
   font-weight: 700;
   margin-bottom: 9px;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--card-border);
+  color: var(--text-secondary);
 }
 
 .skills-title {
-  color: #a5b4fc;
+  color: var(--blue-deep);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -283,73 +361,64 @@ body {
   list-style: none;
 }
 
-.skills-title::-webkit-details-marker {
-  display: none;
-}
+.skills-title::-webkit-details-marker { display: none; }
 
 .skills-badge {
   margin-left: auto;
   border-radius: 999px;
-  border: 1px solid rgba(165, 180, 252, 0.42);
-  background: rgba(165, 180, 252, 0.16);
-  color: #c7d2fe;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--blue-deep);
   padding: 1px 7px;
   font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0;
 }
 
-.matched-title {
-  color: var(--green);
-}
+.matched-title { color: #065f46; }
+.missing-title { color: #991b1b; }
 
-.missing-title {
-  color: var(--red);
-}
-
+/* ── Chips (mirror .chip variants in the app) ── */
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-#user-skills-chips {
-  margin-top: 8px;
-}
+#user-skills-chips { margin-top: 8px; }
 
 .chip {
-  border-radius: 9px;
+  border-radius: 999px;
   border: 1px solid transparent;
   padding: 4px 9px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
 .chip-user {
-  border-color: rgba(165, 180, 252, 0.35);
-  background: rgba(165, 180, 252, 0.12);
-  color: #c7d2fe;
+  border-color: var(--card-border);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
 }
 
 .chip-matched {
-  border-color: rgba(52, 211, 153, 0.34);
-  background: rgba(52, 211, 153, 0.14);
-  color: #a7f3d0;
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+  color: #065f46;
 }
 
 .chip-missing {
-  border-color: rgba(248, 113, 113, 0.34);
-  background: rgba(248, 113, 113, 0.14);
-  color: #fecaca;
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+  color: #991b1b;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.chip-missing:hover {
-  background: rgba(248, 113, 113, 0.22);
-}
+.chip-missing:hover { background: rgba(239, 68, 68, 0.16); }
 
 .chip.is-loading {
   opacity: 0.7;
@@ -357,38 +426,45 @@ body {
 }
 
 .chip.is-added {
-  border-color: rgba(52, 211, 153, 0.38);
-  background: rgba(52, 211, 153, 0.18);
-  color: #bbf7d0;
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.16);
+  color: #065f46;
   cursor: default;
 }
 
 .empty-state {
   width: 100%;
   border-radius: 10px;
-  border: 1px dashed var(--border);
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.3);
   padding: 7px 9px;
   font-size: 11px;
   color: var(--text-muted);
 }
 
+/* ── Status bar ── */
 .status-bar {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--card-border);
   padding: 10px 12px;
   text-align: center;
   font-size: 11px;
-  color: var(--text-secondary);
-  background: rgba(8, 20, 42, 0.9);
+  color: var(--text-muted);
+  background: var(--bar-bg);
+  backdrop-filter: blur(20px);
 }
 
-.status-bar.status-success {
-  color: #86efac;
-}
+/* emerald-800 rather than --green-deep: this is 11px text, so it needs the
+   4.5:1 AA threshold for small text (--green-deep only clears 3:1, which is
+   enough for the large score number but not for this). */
+.status-bar.status-success { color: #065f46; }
+.status-bar.status-error   { color: var(--red-deep); }
+.status-bar.status-warning { color: var(--amber-deep); }
 
-.status-bar.status-error {
-  color: #fca5a5;
-}
-
-.status-bar.status-warning {
-  color: #fde68a;
+@media (prefers-reduced-motion: reduce) {
+  .primary-btn,
+  .secondary-btn,
+  .score-ring,
+  .chip-missing { transition: none; }
+  .primary-btn:hover:not(:disabled),
+  .secondary-btn:hover:not(:disabled) { transform: none; }
 }

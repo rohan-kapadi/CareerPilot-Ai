@@ -286,15 +286,17 @@ function animateScore(target) {
     const offset = CIRCUMFERENCE - (CIRCUMFERENCE * current) / 100;
     scoreRing.style.strokeDashoffset = String(offset);
 
+    // 600/700-weight shades: the previous 400-weight values were tuned for the
+    // old dark popup and wash out against the light card background.
     if (current >= 75) {
-      scoreRing.style.stroke = '#34d399';
-      scoreValue.style.color = '#34d399';
+      scoreRing.style.stroke = '#059669';
+      scoreValue.style.color = '#059669';
     } else if (current >= 50) {
-      scoreRing.style.stroke = '#fbbf24';
-      scoreValue.style.color = '#fbbf24';
+      scoreRing.style.stroke = '#b45309';
+      scoreValue.style.color = '#b45309';
     } else {
-      scoreRing.style.stroke = '#f87171';
-      scoreValue.style.color = '#f87171';
+      scoreRing.style.stroke = '#dc2626';
+      scoreValue.style.color = '#dc2626';
     }
 
     if (progress < 1) {
