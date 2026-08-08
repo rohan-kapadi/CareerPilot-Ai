@@ -8,6 +8,6 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "env": {
-    "VITE_API_URL": "https://your-node-server.onrender.com/api"
+    "VITE_API_URL": "https://careerpilot-ai-server-lgiq.onrender.com/api"
   }
 }

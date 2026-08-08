@@ -42,15 +42,23 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:3000',
+  'https://career-pilot-ai-10.vercel.app',
   config.clientUrl,
+  config.clientUrl?.replace(/\/$/, ''),
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('chrome-extension://')) {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      allowedOrigins.includes(origin.replace(/\/$/, '')) ||
+      origin.endsWith('.vercel.app') ||
+      origin.startsWith('chrome-extension://')
+    ) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,

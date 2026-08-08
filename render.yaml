@@ -23,7 +23,7 @@ services:
           type: web
           property: host
       - key: CLIENT_URL
-        value: https://your-app.vercel.app  # Update after Vercel deploy
+        value: https://career-pilot-ai-10.vercel.app
 
   # ── Python FastAPI AI Service ──────────────────────────────────────────────
   - type: web
